@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICEBERG PARTNERS | News Terminal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg-primary: #f5f6f8; --bg-secondary: #ffffff; --bg-card: #ffffff;
+    --bg-card-hover: #f0f2f5; --border: #e2e5ea; --border-accent: #c9cdd4;
+    --text-primary: #1a1d23; --text-secondary: #5a6170; --text-muted: #8b919e;
+    --accent-blue: #2563eb; --accent-orange: #d97706; --accent-green: #059669;
+    --accent-red: #dc2626; --accent-purple: #7c3aed; --accent-cyan: #0891b2;
+    --accent-ice: #2563eb;
+  }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+
+  /* ═══ TOP BAR ═══ */
+  .top-bar { background: #ffffff; border-bottom: 1px solid var(--border); padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .logo-section { display: flex; align-items: center; gap: 14px; }
+  .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #ffffff; font-family: 'JetBrains Mono', monospace; }
+  .logo-text { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; letter-spacing: 3px; }
+  .logo-sub { font-size: 10px; letter-spacing: 2px; color: var(--accent-ice); font-weight: 500; margin-top: 1px; }
+  .header-right { display: flex; align-items: center; gap: 20px; }
+  .live-indicator { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent-green); }
+  .live-dot { width: 7px; height: 7px; background: var(--accent-green); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{ opacity:1; box-shadow:0 0 0 0 rgba(16,185,129,.4); } 50%{ opacity:.6; box-shadow:0 0 0 6px rgba(16,185,129,0); } }
+  .clock { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary); letter-spacing: 1px; }
+  .refresh-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary); padding: 7px 16px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: pointer; transition: all .2s; letter-spacing: 1px; }
+  .refresh-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+  .refresh-btn.loading { color: var(--accent-orange); border-color: var(--accent-orange); }
+
+
+  /* ═══ CONTROL BAR ═══ */
+  .control-bar { padding: 16px 40px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); background: var(--bg-secondary); }
+  .search-input { flex: 1; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 9px 16px; color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+  .search-input::placeholder { color: var(--text-muted); }
+  .search-input:focus { border-color: var(--accent-blue); }
+  .stat-chips { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+  .stat-chip { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .5px; color: var(--text-secondary); cursor: pointer; transition: all .2s; white-space: nowrap; }
+  .stat-chip:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .stat-chip.active { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(37,99,235,.06); }
+  .stat-chip .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .stat-chip .num { font-weight: 600; color: var(--text-primary); }
+
+  /* ═══ DASHBOARD ═══ */
+  .dashboard { padding: 28px 40px 40px; max-width: 1800px; margin: 0 auto; }
+
+  /* ═══ CATEGORY SECTION ═══ */
+  .cat-section { margin-bottom: 36px; }
+  .cat-section.hidden { display: none; }
+  .cat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .cat-color-bar { width: 4px; height: 28px; border-radius: 2px; flex-shrink: 0; }
+  .cat-label { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+  .cat-sublabel { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-muted); margin-left: 8px; font-weight: 400; }
+  .cat-article-count { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+  .cat-see-all { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent-ice); cursor: pointer; letter-spacing: 1px; opacity: .7; transition: opacity .2s; }
+  .cat-see-all:hover { opacity: 1; }
+
+  /* ═══ CARD ROW ═══ */
+  .card-row { display: flex; gap: 16px; overflow-x: auto; overflow-y: hidden; scroll-behavior: smooth; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  .card-row::-webkit-scrollbar { height: 4px; } .card-row::-webkit-scrollbar-track { background: transparent; } .card-row::-webkit-scrollbar-thumb { background: #c9cdd4; border-radius: 2px; }
+
+  /* ═══ NEWS CARD ═══ */
+  .h-card { flex: 0 0 380px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; cursor: pointer; transition: all .25s; display: flex; flex-direction: column; gap: 10px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .h-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .h-card-top { display: flex; align-items: center; justify-content: space-between; }
+  .h-source { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-secondary); }
+  .h-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); }
+  .h-title { font-size: 15px; font-weight: 600; line-height: 1.5; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+  .h-desc { font-size: 12.5px; line-height: 1.55; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .h-card-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; opacity: 0; transition: opacity .25s; }
+  .h-card:hover .h-card-accent { opacity: 1; }
+
+  /* ═══ LEAD CARD ═══ */
+  .lead-card { flex: 0 0 520px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; cursor: pointer; transition: all .25s; display: flex; flex-direction: column; gap: 12px; position: relative; }
+  .lead-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .lead-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; display: inline-block; width: fit-content; }
+  .lead-title { font-size: 19px; font-weight: 700; line-height: 1.4; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .lead-desc { font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .lead-meta { display: flex; align-items: center; gap: 16px; margin-top: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); }
+  .lead-card .h-card-accent { height: 4px; }
+  .lead-card:hover .h-card-accent { opacity: 1; }
+
+  /* ═══ EXPANDED GRID ═══ */
+  .expanded-grid { display: none; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; margin-top: 16px; }
+  .expanded-grid.show { display: grid; }
+  .expanded-grid .h-card { flex: unset; }
+
+  /* ═══ LOADING ═══ */
+  .loading-skeleton { flex: 0 0 380px; min-height: 180px; background: linear-gradient(90deg, #f0f2f5 25%, #e8eaee 50%, #f0f2f5 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 10px; border: 1px solid var(--border); }
+  @keyframes shimmer { 0%{ background-position:-200% 0; } 100%{ background-position:200% 0; } }
+  .empty-row { flex: 0 0 100%; display: flex; align-items: center; justify-content: center; min-height: 120px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; }
+
+
+
+  /* ═══ FOOTER ═══ */
+  .footer { border-top: 1px solid var(--border); padding: 20px 40px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+
+  /* ═══ RESPONSIVE ═══ */
+  @media (max-width: 900px) { .top-bar,.control-bar,.dashboard,.footer { padding-left:16px; padding-right:16px; } .h-card { flex:0 0 300px; } .lead-card { flex:0 0 340px; } .stat-chips { display:none; } .expanded-grid { grid-template-columns:1fr; } }
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #f0f2f5; } ::-webkit-scrollbar-thumb { background: #c9cdd4; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="top-bar">
+  <div class="logo-section">
+    <div class="logo-icon">IP</div>
+    <div><div class="logo-text">ICEBERG PARTNERS</div><div class="logo-sub">NEWS TERMINAL</div></div>
+  </div>
+  <div class="header-right">
+    <div class="live-indicator"><span class="live-dot"></span><span>LIVE</span></div>
+    <div class="clock" id="clock"></div>
+    <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()">↻ REFRESH</button>
+  </div>
+</header>
+
+
+<div class="control-bar">
+  <input type="text" class="search-input" id="searchInput" placeholder="Search all feeds..." oninput="handleSearch()">
+  <div class="stat-chips" id="statChips"></div>
+</div>
+
+<main class="dashboard" id="dashboard"></main>
+
+<footer class="footer">
+  ICEBERG PARTNERS © 2026 · INTERNAL USE ONLY · AUTO-REFRESH 10 MIN · LAST UPDATED: <span id="lastUpdated">—</span>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CORS PROXIES — multiple fallbacks for reliability
+// ══════════════════════════════════════════════════════════════
+
+const PROXIES = [
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
+
+const RSS2JSON = url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+
+// ══════════════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════════════
+
+const CATEGORIES = [
+  { id: 'cre-finance', label: 'CRE FINANCE', sub: 'US · NYC · Office · Hotel · Conversions · Distressed', color: '#3b82f6', feeds: [
+    // 전체 미국 CRE 시장
+    { url: 'https://commercialobserver.com/feed/', source: 'Commercial Observer' },
+    { url: 'https://therealdeal.com/feed/', source: 'The Real Deal' },
+    { url: 'https://news.google.com/rss/search?q=site:bisnow.com+commercial+real+estate&hl=en-US&gl=US&ceid=US:en', source: 'Bisnow' },
+    { url: 'https://www.connectcre.com/feed/', source: 'ConnectCRE' },
+    { url: 'https://news.google.com/rss/search?q=site:perecredit.com&hl=en-US&gl=US&ceid=US:en', source: 'PERE Credit' },
+    { url: 'https://news.google.com/rss/search?q=site:perenews.com&hl=en-US&gl=US&ceid=US:en', source: 'PERE News' },
+    { url: 'https://news.google.com/rss/search?q="PERE"+real+estate+private+equity+fund&hl=en-US&gl=US&ceid=US:en', source: 'PERE Fund' },
+    { url: 'https://news.google.com/rss/search?q="private+equity+real+estate"+fund+fundraising+investment&hl=en-US&gl=US&ceid=US:en', source: 'PE Real Estate' },
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+deal+acquisition+office+multifamily&hl=en-US&gl=US&ceid=US:en', source: 'US CRE Deals' },
+    // NYC — One Pierrepont, Brooklyn 관련
+    { url: 'https://news.google.com/rss/search?q="New+York"+OR+"Brooklyn"+office+commercial+real+estate+deal&hl=en-US&gl=US&ceid=US:en', source: 'NYC CRE' },
+    // Denver — 1670 Broadway, Office Conversion 관련
+    { url: 'https://news.google.com/rss/search?q=office+to+residential+conversion+adaptive+reuse&hl=en-US&gl=US&ceid=US:en', source: 'Office Conversion' },
+    { url: 'https://news.google.com/rss/search?q=Denver+commercial+real+estate+office&hl=en-US&gl=US&ceid=US:en', source: 'Denver CRE' },
+    // Seattle — Lotte Hotel 관련
+    { url: 'https://news.google.com/rss/search?q=Seattle+hotel+hospitality+real+estate+investment&hl=en-US&gl=US&ceid=US:en', source: 'Seattle Hotel' },
+    { url: 'https://news.google.com/rss/search?q=hotel+acquisition+hospitality+REIT+investment&hl=en-US&gl=US&ceid=US:en', source: 'Hotel CRE' },
+    // Westchester 관련
+    { url: 'https://news.google.com/rss/search?q=Westchester+County+real+estate+development+housing&hl=en-US&gl=US&ceid=US:en', source: 'Westchester Dev' },
+    // Distressed CRE
+    { url: 'https://news.google.com/rss/search?q=distressed+commercial+real+estate+default+foreclosure+loan+maturity&hl=en-US&gl=US&ceid=US:en', source: 'Distressed CRE' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+delinquency+special+servicing+default&hl=en-US&gl=US&ceid=US:en', source: 'CMBS Distress' },
+    // 한국 — 대미투자, 상업용 부동산
+    { url: 'https://news.google.com/rss/search?q=대미투자+미국+부동산+한국+기관투자&hl=ko&gl=KR&ceid=KR:ko', source: '대미투자' },
+    { url: 'https://news.google.com/rss/search?q=Korean+investor+US+real+estate+investment&hl=en-US&gl=US&ceid=US:en', source: 'KR→US CRE' },
+    { url: 'https://news.google.com/rss/search?q=상업용+부동산+오피스+물류센터+투자&hl=ko&gl=KR&ceid=KR:ko', source: '한경 부동산' },
+    { url: 'https://news.google.com/rss/search?q=미국+호텔+부동산+투자+매각&hl=ko&gl=KR&ceid=KR:ko', source: '한경 호텔투자' },
+  ]},
+  { id: 'private-credit', label: 'PRIVATE CREDIT & DISTRESSED', sub: 'Fund Risk · Defaults · Maturity · CMBS · Bank CRE', color: '#a78bfa', feeds: [
+    { url: 'https://news.google.com/rss/search?q=site:institutionalinvestor.com+private+credit&hl=en-US&gl=US&ceid=US:en', source: 'Institutional Investor' },
+    { url: 'https://news.google.com/rss/search?q=site:pitchbook.com+private+credit+fund&hl=en-US&gl=US&ceid=US:en', source: 'PitchBook' },
+    { url: 'https://news.google.com/rss/search?q=site:seekingalpha.com+REIT+private+credit&hl=en-US&gl=US&ceid=US:en', source: 'Seeking Alpha REITs' },
+    { url: 'https://news.google.com/rss/search?q="New+York"+private+credit+mezzanine+bridge+loan+CRE+debt&hl=en-US&gl=US&ceid=US:en', source: 'NYC Credit' },
+    // FFIEC / Bank CRE exposure 관련
+    { url: 'https://news.google.com/rss/search?q=bank+CRE+loan+exposure+FDIC+stress+commercial+real+estate&hl=en-US&gl=US&ceid=US:en', source: 'Bank CRE Risk' },
+    { url: 'https://news.google.com/rss/search?q=CRE+debt+maturity+wall+refinancing+distressed+loan&hl=en-US&gl=US&ceid=US:en', source: 'CRE Debt' },
+    // 한국
+    { url: 'https://news.google.com/rss/search?q=사모펀드+대출펀드+부실채권+만기+해외부동산&hl=ko&gl=KR&ceid=KR:ko', source: '매일경제 사모' },
+    { url: 'https://news.google.com/rss/search?q=PEF+크레딧펀드+메자닌+부동산펀드&hl=ko&gl=KR&ceid=KR:ko', source: '한경 크레딧' },
+    { url: 'https://news.google.com/rss/search?q=해외부동산+펀드+손실+만기+메리츠+하나&hl=ko&gl=KR&ceid=KR:ko', source: '해외부동산펀드' },
+  ]},
+  { id: 'market-analysis', label: 'MARKET ANALYSIS', sub: 'US · Korea · Macro · 대미투자', color: '#10b981', feeds: [
+    { url: 'https://news.google.com/rss/search?q=CNBC+economy+market+analysis&hl=en-US&gl=US&ceid=US:en', source: 'CNBC' },
+    { url: 'https://news.google.com/rss/search?q=Reuters+business+economy+market&hl=en-US&gl=US&ceid=US:en', source: 'Reuters Biz' },
+    { url: 'https://news.google.com/rss/search?q=US+interest+rate+inflation+Fed+treasury+economy&hl=en-US&gl=US&ceid=US:en', source: 'US Macro' },
+    { url: 'https://news.google.com/rss/search?q=한국+경제+금리+증시+환율&hl=ko&gl=KR&ceid=KR:ko', source: '조선비즈' },
+    { url: 'https://news.google.com/rss/search?q=미국+경제+연준+기준금리+인플레이션&hl=ko&gl=KR&ceid=KR:ko', source: '한경 경제' },
+    { url: 'https://news.google.com/rss/search?q=한미+경제+환율+통화정책+금리차&hl=ko&gl=KR&ceid=KR:ko', source: '한미 경제' },
+    { url: 'https://news.google.com/rss/search?q=해외투자+대미투자+국민연금+미국+부동산+기관투자&hl=ko&gl=KR&ceid=KR:ko', source: '대미투자 동향' },
+    { url: 'https://news.google.com/rss/search?q=South+Korea+investment+US+real+estate+institutional&hl=en-US&gl=US&ceid=US:en', source: 'KR→US Flow' },
+  ]},
+  { id: 'energy-infra', label: 'ENERGY & INFRA', sub: 'Arizona · Ohio · SMR · Nuclear · EPC · Construction', color: '#f59e0b', feeds: [
+    { url: 'https://www.utilitydive.com/feeds/news/', source: 'Utility Dive' },
+    { url: 'https://news.google.com/rss/search?q=site:powermag.com+energy+power&hl=en-US&gl=US&ceid=US:en', source: 'POWER Magazine' },
+    // Arizona — Powerplant, Palo Verde, APS 관련
+    { url: 'https://news.google.com/rss/search?q=Arizona+energy+power+plant+solar+nuclear+grid&hl=en-US&gl=US&ceid=US:en', source: 'Arizona Energy' },
+    { url: 'https://news.google.com/rss/search?q=Palo+Verde+APS+"Arizona+Public+Service"+SRP+power&hl=en-US&gl=US&ceid=US:en', source: 'AZ Utilities' },
+    { url: 'https://news.google.com/rss/search?q=Arizona+"powered+land"+OR+"data+center"+power+infrastructure&hl=en-US&gl=US&ceid=US:en', source: 'AZ Powered Land' },
+    // Ohio Portsmouth — Powered Land 관련
+    { url: 'https://news.google.com/rss/search?q=Ohio+Portsmouth+energy+power+plant+nuclear&hl=en-US&gl=US&ceid=US:en', source: 'Ohio Energy' },
+    // SMR / Samsung SMR 관련
+    { url: 'https://news.google.com/rss/search?q=small+modular+reactor+SMR+nuclear+power&hl=en-US&gl=US&ceid=US:en', source: 'SMR Nuclear' },
+    { url: 'https://news.google.com/rss/search?q=삼성+SMR+소형모듈원자로+원전&hl=ko&gl=KR&ceid=KR:ko', source: '삼성 SMR' },
+    // Blackstone Invenergy Tallgrass 관련
+    { url: 'https://news.google.com/rss/search?q=Blackstone+infrastructure+Invenergy+OR+Tallgrass+energy&hl=en-US&gl=US&ceid=US:en', source: 'Blackstone Infra' },
+    // 건설사 / EPC — Arizona 프로젝트 건설사 동향
+    { url: 'https://news.google.com/rss/search?q="Samsung+C%26T"+OR+"Samsung+Engineering"+energy+construction+EPC&hl=en-US&gl=US&ceid=US:en', source: 'Samsung C&T' },
+    { url: 'https://news.google.com/rss/search?q=삼성물산+삼성엔지니어링+건설+에너지+발전소+EPC&hl=ko&gl=KR&ceid=KR:ko', source: '삼성물산 EPC' },
+    { url: 'https://news.google.com/rss/search?q=Bechtel+OR+Fluor+OR+"Black+%26+Veatch"+power+plant+EPC+construction&hl=en-US&gl=US&ceid=US:en', source: 'US EPC' },
+    { url: 'https://news.google.com/rss/search?q=에너지+LNG+원전+전력+인프라&hl=ko&gl=KR&ceid=KR:ko', source: '에너지경제' },
+  ]},
+  { id: 'datacenter-ai', label: 'DATA CENTER / AI', sub: 'Arizona · Cloud · GPU · Hyperscale · Powered Land', color: '#06b6d4', feeds: [
+    { url: 'https://news.google.com/rss/search?q=data+center+hyperscale+cloud+infrastructure&hl=en-US&gl=US&ceid=US:en', source: 'DCK' },
+    { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', source: 'TechCrunch AI' },
+    // Arizona data center — AZ Powered Land 관련
+    { url: 'https://news.google.com/rss/search?q=Arizona+data+center+campus+hyperscale+power&hl=en-US&gl=US&ceid=US:en', source: 'AZ Data Center' },
+    { url: 'https://news.google.com/rss/search?q="powered+land"+data+center+development+site&hl=en-US&gl=US&ceid=US:en', source: 'Powered Land DC' },
+    { url: 'https://news.google.com/rss/search?q=데이터센터+AI+반도체+GPU+클라우드&hl=ko&gl=KR&ceid=KR:ko', source: '전자신문 AI' },
+    { url: 'https://news.google.com/rss/search?q=한국+데이터센터+투자+미국+진출&hl=ko&gl=KR&ceid=KR:ko', source: 'KR DC투자' },
+  ]},
+  { id: 'geopolitics', label: 'GEOPOLITICS & TRADE', sub: 'US-Korea · Tariffs · Policy · Diplomacy', color: '#f87171', feeds: [
+    { url: 'https://news.google.com/rss/search?q=Reuters+geopolitics+trade+tariffs&hl=en-US&gl=US&ceid=US:en', source: 'Reuters World' },
+    { url: 'https://news.google.com/rss/search?q=site:politico.com+economy+trade+policy&hl=en-US&gl=US&ceid=US:en', source: 'Politico' },
+    { url: 'https://news.google.com/rss/search?q=US+Korea+trade+tariff+CFIUS+foreign+investment&hl=en-US&gl=US&ceid=US:en', source: 'US-KR Trade' },
+    { url: 'https://news.google.com/rss/search?q=관세+무역+외교+지정학+통상&hl=ko&gl=KR&ceid=KR:ko', source: '연합뉴스 통상' },
+    { url: 'https://news.google.com/rss/search?q=한미+통상+관세+CFIUS+외국인투자&hl=ko&gl=KR&ceid=KR:ko', source: '한미 통상' },
+  ]}
+];
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+
+let articlesByCategory = {};
+let expandedSections = new Set();
+let searchQuery = '';
+CATEGORIES.forEach(c => articlesByCategory[c.id] = []);
+
+// ══════════════════════════════════════════════════════════════
+// CLOCK & TICKER
+// ══════════════════════════════════════════════════════════════
+
+function updateClock() {
+  const now = new Date();
+  const ny = now.toLocaleString('en-US', { timeZone:'America/New_York', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+  const kr = now.toLocaleString('en-US', { timeZone:'Asia/Seoul', hour:'2-digit', minute:'2-digit', hour12:false });
+  document.getElementById('clock').textContent = `NY ${ny}  ·  KR ${kr}`;
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ══════════════════════════════════════════════════════════════
+// RSS FETCH — multi-strategy with fallbacks
+// ══════════════════════════════════════════════════════════════
+
+function getTimeoutSignal(ms) {
+  try {
+    if (AbortSignal.timeout) return AbortSignal.timeout(ms);
+  } catch(e) {}
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), ms);
+  return ctrl.signal;
+}
+
+function parseRssXml(xmlText, source, catId) {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const items = doc.querySelectorAll('item');
+    if (items.length === 0) {
+      // Try Atom format
+      const entries = doc.querySelectorAll('entry');
+      return Array.from(entries).slice(0, 15).map(entry => {
+        const title = entry.querySelector('title')?.textContent || '';
+        const link = entry.querySelector('link')?.getAttribute('href') || entry.querySelector('link')?.textContent || '#';
+        const desc = entry.querySelector('summary')?.textContent || entry.querySelector('content')?.textContent || '';
+        const dateStr = entry.querySelector('published')?.textContent || entry.querySelector('updated')?.textContent || '';
+        let pubDate = new Date(dateStr);
+        if (isNaN(pubDate)) pubDate = new Date();
+        return { title, description: stripHtml(desc), link, pubDate, source, category: catId };
+      });
+    }
+    return Array.from(items).slice(0, 15).map(item => {
+      const title = item.querySelector('title')?.textContent || '';
+      const link = item.querySelector('link')?.textContent || '#';
+      const desc = item.querySelector('description')?.textContent || item.getElementsByTagName('content:encoded')[0]?.textContent || '';
+      const dateStr = item.querySelector('pubDate')?.textContent || item.getElementsByTagName('dc:date')[0]?.textContent || '';
+      let pubDate = new Date(dateStr);
+      if (isNaN(pubDate)) pubDate = new Date();
+      return { title, description: stripHtml(desc), link: link.trim(), pubDate, source, category: catId };
+    });
+  } catch (e) {
+    console.warn(`[PARSE] XML parse error for ${source}:`, e);
+    return [];
+  }
+}
+
+function stripHtml(html) {
+  if (!html) return '';
+  try {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return (doc.body.textContent || '').trim();
+  } catch(e) {
+    return '';
+  }
+}
+
+function escapeHTML(str) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/[&<>'"]/g, match => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[match]));
+}
+
+async function fetchFeedViaProxy(feedUrl, source, catId) {
+  // Strategy 1: Try rss2json first (fast when it works)
+  try {
+    const r = await fetch(RSS2JSON(feedUrl), { signal: getTimeoutSignal(8000) });
+    if (r.ok) {
+      const d = await r.json();
+      if (d.status === 'ok' && d.items && d.items.length > 0) {
+        return d.items.map(item => {
+          let pubDate = new Date(item.pubDate);
+          if (isNaN(pubDate)) pubDate = new Date();
+          return {
+            title: item.title || '', description: stripHtml(item.description || item.content || ''),
+            link: item.link || '#', pubDate, source, category: catId
+          };
+        });
+      }
+    }
+  } catch (e) { /* fall through */ }
+
+  // Strategy 2: Try CORS proxies
+  for (const makeUrl of PROXIES) {
+    try {
+      const r = await fetch(makeUrl(feedUrl), { signal: getTimeoutSignal(10000) });
+      if (!r.ok) continue;
+      const text = await r.text();
+      if (!text.includes('<') || text.length < 100) continue;
+      const articles = parseRssXml(text, source, catId);
+      if (articles.length > 0) return articles;
+    } catch (e) { continue; }
+  }
+
+  console.warn(`[FEED] All strategies failed for ${source} (${feedUrl})`);
+  return [];
+}
+
+// LocalStorage Persistence
+const CACHE_KEY = 'iceberg_news_cache_v2';
+function saveCache() {
+  try {
+    const toSave = {};
+    CATEGORIES.forEach(c => toSave[c.id] = (articlesByCategory[c.id] || []).slice(0, 30));
+    localStorage.setItem(CACHE_KEY, JSON.stringify(toSave));
+  } catch(e) {}
+}
+
+function loadCache() {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const data = JSON.parse(cached);
+      CATEGORIES.forEach(c => {
+         if (data[c.id]) {
+           articlesByCategory[c.id] = data[c.id].map(a => ({...a, pubDate: new Date(a.pubDate)}));
+         }
+      });
+      renderStatChips();
+      renderDashboard();
+    }
+  } catch(e) {}
+}
+
+let renderTimer = null;
+function debouncedRender() {
+  if (renderTimer) clearTimeout(renderTimer);
+  renderTimer = setTimeout(() => {
+    renderStatChips();
+    renderDashboard();
+    saveCache();
+  }, 150);
+}
+
+let failedFeeds = [];
+
+async function fetchAllFeeds() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading'); btn.textContent = '⟳ LOADING...';
+
+  failedFeeds = [];
+  let totalLoaded = 0;
+  
+  const tasks = [];
+  CATEGORIES.forEach(cat => {
+    cat.feeds.forEach(f => {
+      tasks.push(async () => {
+        try {
+          const newArticles = await fetchFeedViaProxy(f.url, f.source, cat.id);
+          if (newArticles && newArticles.length > 0) {
+            let existing = articlesByCategory[cat.id] || [];
+            const combined = [...newArticles];
+            const newKeys = new Set(combined.map(a => a.title.toLowerCase().trim().slice(0, 60)));
+            existing.forEach(old => {
+              const k = old.title.toLowerCase().trim().slice(0, 60);
+              if (!newKeys.has(k)) { combined.push(old); newKeys.add(k); }
+            });
+            combined.sort((a, b) => b.pubDate - a.pubDate);
+            
+            const seen = new Set();
+            articlesByCategory[cat.id] = combined.filter(a => {
+              const k = a.title.toLowerCase().trim().slice(0, 60);
+              if (seen.has(k)) return false;
+              seen.add(k); return true;
+            });
+
+            totalLoaded += newArticles.length;
+            debouncedRender();
+          } else {
+            failedFeeds.push(f.source);
+          }
+        } catch (e) {
+          failedFeeds.push(f.source);
+        }
+      });
+    });
+  });
+
+  const limit = 8;
+  const running = new Set();
+  for (const task of tasks) {
+    const p = task().finally(() => running.delete(p));
+    running.add(p);
+    if (running.size >= limit) {
+      await Promise.race(running);
+    }
+  }
+  await Promise.all(running);
+
+  btn.classList.remove('loading'); btn.textContent = '↻ REFRESH';
+  document.getElementById('lastUpdated').textContent = new Date().toLocaleString('en-US', { hour:'2-digit', minute:'2-digit', month:'short', day:'numeric' });
+  console.log(`[FEED] Loaded ${totalLoaded} new articles` + (failedFeeds.length ? ` | Failed: ${failedFeeds.join(', ')}` : ''));
+  debouncedRender();
+}
+
+// ══════════════════════════════════════════════════════════════
+// STAT CHIPS
+// ══════════════════════════════════════════════════════════════
+
+function renderStatChips() {
+  const total = Object.values(articlesByCategory).reduce((s, a) => s + a.length, 0);
+  let h = `<div class="stat-chip active" id="chip-all" onclick="scrollToSection('all')"><span class="num">${total}</span> TOTAL</div>`;
+  CATEGORIES.forEach(c => {
+    h += `<div class="stat-chip" id="chip-${c.id}" onclick="scrollToSection('${c.id}')"><span class="dot" style="background:${c.color}"></span><span class="num">${articlesByCategory[c.id].length}</span> ${c.label.split(' ')[0]}</div>`;
+  });
+  document.getElementById('statChips').innerHTML = h;
+}
+
+function scrollToSection(id) {
+  document.querySelectorAll('.stat-chip').forEach(c => c.classList.remove('active'));
+  const chip = document.getElementById('chip-' + id);
+  if (chip) chip.classList.add('active');
+
+  if (id === 'all') { window.scrollTo({ top:0, behavior:'smooth' }); return; }
+  document.getElementById('section-'+id)?.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════════
+
+function getTimeAgo(d) {
+  let m = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (m < 0) m = 0;
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  const dy = Math.floor(h / 24);
+  return dy < 7 ? `${dy}d` : d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+
+function openArticle(url) {
+  window.open(url, '_blank');
+}
+
+function renderCard(a, cat, isLead) {
+  const sl = a.link.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  const dateStr = escapeHTML(a.pubDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}));
+  const timeAgoStr = escapeHTML(getTimeAgo(a.pubDate));
+  
+  const safeTitle = escapeHTML(a.title);
+  const rawDesc = a.description || '';
+  const isLeadCut = rawDesc.length > 250;
+  const isSmallCut = rawDesc.length > 140;
+  const safeDescLead = escapeHTML(rawDesc.slice(0, 250)) + (isLeadCut ? '…' : '');
+  const safeDescSmall = escapeHTML(rawDesc.slice(0, 140)) + (isSmallCut ? '…' : '');
+  const safeSource = escapeHTML(a.source);
+
+  if (isLead) return `
+    <div class="lead-card" onclick="openArticle('${sl}')">
+      <div class="h-card-accent" style="background:${cat.color}"></div>
+      <div class="lead-label" style="background:${cat.color}22;color:${cat.color};border:1px solid ${cat.color}44">TOP · ${safeSource.toUpperCase()}</div>
+      <div class="lead-title">${safeTitle}</div>
+      <div class="lead-desc">${safeDescLead}</div>
+      <div class="lead-meta"><span>${safeSource}</span><span>·</span><span>${dateStr}</span><span>·</span><span>${timeAgoStr} ago</span></div>
+    </div>`;
+  return `
+    <div class="h-card" onclick="openArticle('${sl}')">
+      <div class="h-card-accent" style="background:${cat.color}"></div>
+      <div class="h-card-top"><span class="h-source">${safeSource}</span><span class="h-time">${timeAgoStr}</span></div>
+      <div class="h-title">${safeTitle}</div>
+      <div class="h-desc">${safeDescSmall}</div>
+    </div>`;
+}
+
+function renderDashboard() {
+  const dash = document.getElementById('dashboard');
+  const q = searchQuery.toLowerCase();
+  let html = '';
+
+  CATEGORIES.forEach(cat => {
+    let articles = articlesByCategory[cat.id];
+    if (q) articles = articles.filter(a => a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q) || a.source.toLowerCase().includes(q));
+
+    const isExp = expandedSections.has(cat.id);
+    const hasMore = articles.length > 6;
+
+    html += `<section class="cat-section${!articles.length && q ? ' hidden' : ''}" id="section-${cat.id}">
+      <div class="cat-header">
+        <div class="cat-color-bar" style="background:${cat.color}"></div>
+        <div class="cat-label" style="color:${cat.color}">${cat.label}</div>
+        <div class="cat-sublabel">${cat.sub}</div>
+        <div class="cat-article-count">${articles.length} articles</div>
+        ${hasMore ? `<div class="cat-see-all" onclick="toggleExpand('${cat.id}')">${isExp ? '◂ COLLAPSE' : 'SEE ALL ▸'}</div>` : ''}
+      </div>`;
+
+    if (!articles.length) {
+      html += `<div class="card-row"><div class="empty-row">${q ? 'NO MATCHES' : 'LOADING…'}</div></div>`;
+    } else if (!isExp) {
+      html += `<div class="card-row">${articles.slice(0,6).map((a,i) => renderCard(a,cat,i===0)).join('')}</div>`;
+    } else {
+      html += `<div class="expanded-grid show">${articles.map(a => renderCard(a,cat,false)).join('')}</div>`;
+    }
+    html += `</section>`;
+  });
+  dash.innerHTML = html;
+}
+
+function toggleExpand(id) { expandedSections.has(id) ? expandedSections.delete(id) : expandedSections.add(id); renderDashboard(); }
+function handleSearch() { searchQuery = document.getElementById('searchInput').value.trim(); renderDashboard(); }
+function refreshAll() { fetchAllFeeds(); }
+
+// Auto-refresh every 10 min
+setInterval(fetchAllFeeds, 10 * 60 * 1000);
+
+// INIT
+loadCache();
+fetchAllFeeds();
+</script>
+</body>
+</html>
