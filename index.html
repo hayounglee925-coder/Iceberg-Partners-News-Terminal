@@ -367,34 +367,37 @@ async function fetchTwelveData() {
 }
 
 // ── 10Y UST via FRED CSV (official US Treasury data) ──
+function parseFredCsv(text) {
+  // Handle base64-encoded response
+  if (text.startsWith('data:')) {
+    try { text = atob(text.split(',')[1]); } catch(e) { return null; }
+  }
+  const lines = text.trim().split('\n').filter(l => {
+    const v = l.split(',')[1];
+    return v && !isNaN(parseFloat(v)) && !l.startsWith('observation');
+  });
+  if (!lines.length) return null;
+  const val = parseFloat(lines[lines.length - 1].split(',')[1]);
+  return isNaN(val) ? null : val;
+}
+
 async function fetch10yUST() {
   try {
     const d = new Date(); d.setDate(d.getDate() - 10);
-    const since = d.toISOString().slice(0, 10);
-    const res = await corsFetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=${since}`);
-    const csv = await res.text();
-    const lines = csv.trim().split('\n').filter(l => !l.includes('N/A') && !l.startsWith('observation'));
-    if (lines.length) {
-      const last = lines[lines.length - 1].split(',');
-      return { label: '10Y UST', price: parseFloat(last[1]).toFixed(2) + '%', change: 0, daily: true };
-    }
-  } catch(e) {}
+    const res = await corsFetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=${d.toISOString().slice(0,10)}`);
+    const val = parseFredCsv(await res.text());
+    if (val !== null) return { label: '10Y UST', price: val.toFixed(2) + '%', change: 0, daily: true };
+  } catch(e) { console.error('10Y UST error:', e); }
   return { label: '10Y UST', price: '—', change: 0, daily: true };
 }
 
-// ── SOFR from NY Fed (official) ──
 async function fetchSofr() {
   try {
     const d = new Date(); d.setDate(d.getDate() - 10);
-    const since = d.toISOString().slice(0, 10);
-    const res = await corsFetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR&cosd=${since}`);
-    const csv = await res.text();
-    const lines = csv.trim().split('\n').filter(l => !l.includes('N/A') && !l.startsWith('observation'));
-    if (lines.length) {
-      const last = lines[lines.length - 1].split(',');
-      return { label: 'SOFR', price: parseFloat(last[1]).toFixed(2) + '%', change: 0, daily: true };
-    }
-  } catch(e) {}
+    const res = await corsFetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR&cosd=${d.toISOString().slice(0,10)}`);
+    const val = parseFredCsv(await res.text());
+    if (val !== null) return { label: 'SOFR', price: val.toFixed(2) + '%', change: 0, daily: true };
+  } catch(e) { console.error('SOFR error:', e); }
   return { label: 'SOFR', price: '—', change: 0, daily: true };
 }
 
