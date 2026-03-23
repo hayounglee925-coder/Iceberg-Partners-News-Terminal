@@ -399,16 +399,21 @@ function debouncedRender() {
 }
 
 let failedFeeds = [];
+let isFetching = false;
 
 async function fetchAllFeeds() {
+  if (isFetching) return;
+  isFetching = true;
+
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('loading'); btn.textContent = '⟳ LOADING...';
 
   failedFeeds = [];
   let totalLoaded = 0;
   
-  const tasks = [];
-  CATEGORIES.forEach(cat => {
+  try {
+    const tasks = [];
+    CATEGORIES.forEach(cat => {
     cat.feeds.forEach(f => {
       tasks.push(async () => {
         try {
@@ -442,21 +447,24 @@ async function fetchAllFeeds() {
     });
   });
 
-  const limit = 8;
-  const running = new Set();
-  for (const task of tasks) {
-    const p = task().finally(() => running.delete(p));
-    running.add(p);
-    if (running.size >= limit) {
-      await Promise.race(running);
+    const limit = 8;
+    const running = new Set();
+    for (const task of tasks) {
+      const p = task().finally(() => running.delete(p));
+      running.add(p);
+      if (running.size >= limit) {
+        await Promise.race(running);
+      }
     }
-  }
-  await Promise.all(running);
+    await Promise.all(running);
 
-  btn.classList.remove('loading'); btn.textContent = '↻ REFRESH';
-  document.getElementById('lastUpdated').textContent = new Date().toLocaleString('en-US', { hour:'2-digit', minute:'2-digit', month:'short', day:'numeric' });
-  console.log(`[FEED] Loaded ${totalLoaded} new articles` + (failedFeeds.length ? ` | Failed: ${failedFeeds.join(', ')}` : ''));
-  debouncedRender();
+    console.log(`[FEED] Loaded ${totalLoaded} new articles` + (failedFeeds.length ? ` | Failed: ${failedFeeds.join(', ')}` : ''));
+  } finally {
+    isFetching = false;
+    btn.classList.remove('loading'); btn.textContent = '↻ REFRESH';
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleString('en-US', { hour:'2-digit', minute:'2-digit', month:'short', day:'numeric' });
+    debouncedRender();
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -551,7 +559,7 @@ function renderDashboard() {
       </div>`;
 
     if (!articles.length) {
-      html += `<div class="card-row"><div class="empty-row">${q ? 'NO MATCHES' : 'LOADING…'}</div></div>`;
+      html += `<div class="card-row"><div class="empty-row">${q ? 'NO MATCHES' : (isFetching ? 'LOADING…' : 'NO ARTICLES FOUND')}</div></div>`;
     } else if (!isExp) {
       html += `<div class="card-row">${articles.slice(0,6).map((a,i) => renderCard(a,cat,i===0)).join('')}</div>`;
     } else {
