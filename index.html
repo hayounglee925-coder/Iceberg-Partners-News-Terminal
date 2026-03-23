@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ICEBERG PARTNERS | News Terminal</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('YBZbkgBFL5sOG5ZFc');</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -94,7 +96,9 @@
   @keyframes shimmer { 0%{ background-position:-200% 0; } 100%{ background-position:200% 0; } }
   .empty-row { flex: 0 0 100%; display: flex; align-items: center; justify-content: center; min-height: 120px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; }
 
-
+  /* ═══ SHARE BUTTON ═══ */
+  .share-btn { padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; cursor: pointer; transition: all .15s; text-decoration: none; }
+  .share-btn:hover { border-color: #2563eb; color: #2563eb; background: rgba(37,99,235,.06); }
 
   /* ═══ FOOTER ═══ */
   .footer { border-top: 1px solid var(--border); padding: 20px 40px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
@@ -507,6 +511,24 @@ function openArticle(url) {
   window.open(url, '_blank');
 }
 
+function shareArticle(title, url, btn) {
+  btn.textContent = '⏳'; btn.style.color = '#d97706'; btn.style.borderColor = '#d97706';
+  emailjs.send('service_1n6w6bh', 'template_0grn3hr', {
+    article_title: title,
+    article_url: url
+  }).then(() => {
+    btn.textContent = '✓ SENT';
+    btn.style.color = '#059669'; btn.style.borderColor = '#059669';
+    setTimeout(() => { btn.innerHTML = '✉ SHARE'; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+  }).catch((err) => {
+    console.error('EmailJS Error:', err);
+    alert('EmailJS Error: ' + JSON.stringify(err));
+    btn.textContent = '✗ FAIL';
+    btn.style.color = '#dc2626'; btn.style.borderColor = '#dc2626';
+    setTimeout(() => { btn.innerHTML = '✉ SHARE'; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+  });
+}
+
 function renderCard(a, cat, isLead) {
   const sl = a.link.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
   const dateStr = escapeHTML(a.pubDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}));
@@ -519,6 +541,7 @@ function renderCard(a, cat, isLead) {
   const safeDescLead = escapeHTML(rawDesc.slice(0, 250)) + (isLeadCut ? '…' : '');
   const safeDescSmall = escapeHTML(rawDesc.slice(0, 140)) + (isSmallCut ? '…' : '');
   const safeSource = escapeHTML(a.source);
+  const mailTitle = a.title.replace(/'/g, "\\'");
 
   if (isLead) return `
     <div class="lead-card" onclick="openArticle('${sl}')">
@@ -526,12 +549,12 @@ function renderCard(a, cat, isLead) {
       <div class="lead-label" style="background:${cat.color}22;color:${cat.color};border:1px solid ${cat.color}44">TOP · ${safeSource.toUpperCase()}</div>
       <div class="lead-title">${safeTitle}</div>
       <div class="lead-desc">${safeDescLead}</div>
-      <div class="lead-meta"><span>${safeSource}</span><span>·</span><span>${dateStr}</span><span>·</span><span>${timeAgoStr} ago</span></div>
+      <div class="lead-meta"><span>${safeSource}</span><span>·</span><span>${dateStr}</span><span>·</span><span>${timeAgoStr} ago</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉ SHARE</span></div>
     </div>`;
   return `
     <div class="h-card" onclick="openArticle('${sl}')">
       <div class="h-card-accent" style="background:${cat.color}"></div>
-      <div class="h-card-top"><span class="h-source">${safeSource}</span><span class="h-time">${timeAgoStr}</span></div>
+      <div class="h-card-top"><span class="h-source">${safeSource}</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉</span><span class="h-time">${timeAgoStr}</span></div>
       <div class="h-title">${safeTitle}</div>
       <div class="h-desc">${safeDescSmall}</div>
     </div>`;
