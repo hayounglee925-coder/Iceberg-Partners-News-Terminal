@@ -101,6 +101,20 @@
   .share-btn:hover { border-color: #2563eb; color: #2563eb; background: rgba(37,99,235,.06); }
   .pw-badge { font-size: 10px; margin-left: 4px; cursor: help; }
 
+  /* ═══ TICKER STRIP ═══ */
+  .ticker-strip { background: #111827; overflow: hidden; white-space: nowrap; padding: 7px 0; position: relative; }
+  .ticker-track { display: flex; animation: tickerScroll 45s linear infinite; width: max-content; }
+  .ticker-track:hover { animation-play-state: paused; }
+  .ticker-item { display: inline-flex; align-items: center; gap: 6px; padding: 0 22px; font-family: 'JetBrains Mono', monospace; font-size: 11px; border-right: 1px solid #1f2937; }
+  .ticker-label { color: #9ca3af; font-size: 10px; letter-spacing: 0.5px; }
+  .ticker-value { color: #f3f4f6; font-weight: 600; }
+  .ticker-change { font-size: 10px; font-weight: 500; }
+  .ticker-change.up { color: #34d399; }
+  .ticker-change.down { color: #f87171; }
+  .ticker-change.flat { color: #6b7280; }
+  .ticker-tag { font-size: 7px; color: #4b5563; letter-spacing: 0.5px; border: 1px solid #374151; border-radius: 3px; padding: 1px 4px; margin-left: 2px; }
+  @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
   /* ═══ FOOTER ═══ */
   .footer { border-top: 1px solid var(--border); padding: 20px 40px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
 
@@ -123,6 +137,11 @@
   </div>
 </header>
 
+<div class="ticker-strip">
+  <div class="ticker-track" id="tickerTrack">
+    <span class="ticker-item"><span class="ticker-label">Loading market data...</span></span>
+  </div>
+</div>
 
 <div class="control-bar">
   <input type="text" class="search-input" id="searchInput" placeholder="Search all feeds..." oninput="handleSearch()">
@@ -271,7 +290,7 @@ function updateClock() {
 setInterval(updateClock, 1000); updateClock();
 
 // ══════════════════════════════════════════════════════════════
-// RSS FETCH — multi-strategy with fallbacks
+// UTILITY
 // ══════════════════════════════════════════════════════════════
 
 function getTimeoutSignal(ms) {
@@ -282,6 +301,166 @@ function getTimeoutSignal(ms) {
   setTimeout(() => ctrl.abort(), ms);
   return ctrl.signal;
 }
+
+// ══════════════════════════════════════════════════════════════
+// MARKET TICKER DATA
+// ══════════════════════════════════════════════════════════════
+
+const TD_KEY = '796ee0ad8a7c4f4a81ce4db415b5bdf7';
+
+async function corsFetch(url, timeout = 12000) {
+  for (const proxy of PROXIES) {
+    try {
+      const res = await fetch(proxy(url), { signal: getTimeoutSignal(timeout) });
+      if (res.ok) return res;
+    } catch(e) {}
+  }
+  throw new Error('All CORS proxies failed for ' + url);
+}
+
+async function fetchMarketData() {
+  const [main, ust, sofr, bonds] = await Promise.all([
+    fetchTwelveData(),
+    fetch10yUST(),
+    fetchSofr(),
+    fetchBondYields()
+  ]);
+  return [...main, ust, sofr, ...bonds];
+}
+
+// ── S&P 500 (SPY), DOW (DIA), USD/KRW, USD/JPY via Twelve Data (1 batch call) ──
+async function fetchTwelveData() {
+  try {
+    const res = await fetch(`https://api.twelvedata.com/quote?symbol=SPY,DIA,USD/KRW,USD/JPY&apikey=${TD_KEY}`, { signal: getTimeoutSignal(10000) });
+    const data = await res.json();
+    const results = [];
+    // S&P 500 (SPY ETF)
+    if (data['SPY']?.close) {
+      const s = data['SPY'];
+      results.push({ label: 'S&P 500', price: parseFloat(s.close).toLocaleString('en-US', { maximumFractionDigits: 2 }), change: +parseFloat(s.percent_change).toFixed(2) });
+    } else results.push({ label: 'S&P 500', price: '—', change: 0 });
+    // DOW (DIA ETF)
+    if (data['DIA']?.close) {
+      const d = data['DIA'];
+      results.push({ label: 'DOW', price: parseFloat(d.close).toLocaleString('en-US', { maximumFractionDigits: 2 }), change: +parseFloat(d.percent_change).toFixed(2) });
+    } else results.push({ label: 'DOW', price: '—', change: 0 });
+    // USD/KRW
+    if (data['USD/KRW']?.close) {
+      const k = data['USD/KRW'];
+      results.push({ label: 'USD/KRW', price: Math.round(parseFloat(k.close)).toLocaleString(), change: +parseFloat(k.percent_change).toFixed(2) });
+    } else results.push({ label: 'USD/KRW', price: '—', change: 0 });
+    // USD/JPY
+    if (data['USD/JPY']?.close) {
+      const j = data['USD/JPY'];
+      results.push({ label: 'USD/JPY', price: parseFloat(j.close).toFixed(2), change: +parseFloat(j.percent_change).toFixed(2) });
+    } else results.push({ label: 'USD/JPY', price: '—', change: 0 });
+    return results;
+  } catch(e) {
+    console.error('Twelve Data error:', e);
+    return [
+      { label: 'S&P 500', price: '—', change: 0 },
+      { label: 'DOW', price: '—', change: 0 },
+      { label: 'USD/KRW', price: '—', change: 0 },
+      { label: 'USD/JPY', price: '—', change: 0 },
+    ];
+  }
+}
+
+// ── 10Y UST via FRED CSV (official US Treasury data) ──
+async function fetch10yUST() {
+  try {
+    const d = new Date(); d.setDate(d.getDate() - 10);
+    const since = d.toISOString().slice(0, 10);
+    const res = await corsFetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=${since}`);
+    const csv = await res.text();
+    const lines = csv.trim().split('\n').filter(l => !l.includes('N/A') && !l.startsWith('observation'));
+    if (lines.length) {
+      const last = lines[lines.length - 1].split(',');
+      return { label: '10Y UST', price: parseFloat(last[1]).toFixed(2) + '%', change: 0, daily: true };
+    }
+  } catch(e) {}
+  return { label: '10Y UST', price: '—', change: 0, daily: true };
+}
+
+// ── SOFR from NY Fed (official) ──
+async function fetchSofr() {
+  try {
+    const d = new Date(); d.setDate(d.getDate() - 10);
+    const since = d.toISOString().slice(0, 10);
+    const res = await corsFetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR&cosd=${since}`);
+    const csv = await res.text();
+    const lines = csv.trim().split('\n').filter(l => !l.includes('N/A') && !l.startsWith('observation'));
+    if (lines.length) {
+      const last = lines[lines.length - 1].split(',');
+      return { label: 'SOFR', price: parseFloat(last[1]).toFixed(2) + '%', change: 0, daily: true };
+    }
+  } catch(e) {}
+  return { label: 'SOFR', price: '—', change: 0, daily: true };
+}
+
+// ── 10Y KRW & 10Y JPY via investing.com (cors.eu.org proxy) ──
+async function fetchBondYields() {
+  const out = [
+    { label: '10Y KRW', price: '—', change: 0, daily: true },
+    { label: '10Y JPY', price: '—', change: 0, daily: true },
+  ];
+  const pages = [
+    { idx: 0, url: 'https://www.investing.com/rates-bonds/south-korea-10-year-bond-yield' },
+    { idx: 1, url: 'https://www.investing.com/rates-bonds/japan-10-year-bond-yield' },
+  ];
+  await Promise.all(pages.map(async (p) => {
+    try {
+      const res = await corsFetch(p.url, 15000);
+      const html = await res.text();
+      const m = html.match(/data-test="instrument-price-last"[^>]*>([\d.]+)/i);
+      if (m && parseFloat(m[1]) > 0 && parseFloat(m[1]) < 20) {
+        out[p.idx].price = m[1] + '%';
+      }
+    } catch(e) {}
+  }));
+
+  // Fallback: FRED monthly for Korea 10Y
+  if (out[0].price === '—') {
+    try {
+      const d = new Date(); d.setMonth(d.getMonth() - 3);
+      const since = d.toISOString().slice(0, 10);
+      const res = await corsFetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01KRM156N&cosd=${since}`);
+      const csv = await res.text();
+      const lines = csv.trim().split('\n').filter(l => !l.includes('N/A') && !l.startsWith('observation'));
+      if (lines.length) {
+        const last = lines[lines.length - 1].split(',');
+        out[0].price = parseFloat(last[1]).toFixed(3) + '%';
+      }
+    } catch(e) {}
+  }
+
+  return out;
+}
+
+function renderTicker(data) {
+  const items = data.map(d => {
+    const chgClass = d.change > 0 ? 'up' : d.change < 0 ? 'down' : 'flat';
+    const chgText = d.change > 0 ? `▲ +${d.change}%` : d.change < 0 ? `▼ ${d.change}%` : '';
+    const tag = d.daily ? '<span class="ticker-tag">DAILY</span>' : '';
+    return `<span class="ticker-item"><span class="ticker-label">${d.label}</span><span class="ticker-value">${d.price}</span>${chgText ? `<span class="ticker-change ${chgClass}">${chgText}</span>` : ''}${tag}</span>`;
+  }).join('');
+  document.getElementById('tickerTrack').innerHTML = items + items;
+}
+
+async function updateTicker() {
+  try {
+    const data = await fetchMarketData();
+    renderTicker(data);
+  } catch(e) {
+    console.error('Ticker error:', e);
+  }
+}
+updateTicker();
+setInterval(updateTicker, 5 * 60 * 1000);
+
+// ══════════════════════════════════════════════════════════════
+// RSS FETCH — multi-strategy with fallbacks
+// ══════════════════════════════════════════════════════════════
 
 function parseRssXml(xmlText, source, catId) {
   try {
@@ -519,7 +698,7 @@ function isPaywalled(url) {
 }
 function openArticle(url) {
   window.open(url, '_blank');
-  if (isPaywalled(url)) window.open('https://removepaywalls.com/', '_blank');
+  if (isPaywalled(url)) window.open('https://removepaywalls.com/' + url, '_blank');
 }
 
 function shareArticle(title, url, btn) {
