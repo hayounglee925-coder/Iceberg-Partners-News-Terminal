@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ICEBERG PARTNERS | News Terminal</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>emailjs.init('YBZbkgBFL5sOG5ZFc');</script>
+<script>emailjs.init({ publicKey: 'YBZbkgBFL5sOG5ZFc' });</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -71,8 +71,8 @@
   .h-card-top { display: flex; align-items: center; justify-content: space-between; }
   .h-source { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-secondary); }
   .h-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); }
-  .h-title { font-size: 15px; font-weight: 600; line-height: 1.5; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
-  .h-desc { font-size: 12.5px; line-height: 1.55; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .h-title { font-size: 15px; font-weight: 600; line-height: 1.5; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+  .h-desc { font-size: 12.5px; line-height: 1.55; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .h-card-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; opacity: 0; transition: opacity .25s; }
   .h-card:hover .h-card-accent { opacity: 1; }
 
@@ -80,8 +80,8 @@
   .lead-card { flex: 0 0 520px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; cursor: pointer; transition: all .25s; display: flex; flex-direction: column; gap: 12px; position: relative; }
   .lead-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
   .lead-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; display: inline-block; width: fit-content; }
-  .lead-title { font-size: 19px; font-weight: 700; line-height: 1.4; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .lead-desc { font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .lead-title { font-size: 19px; font-weight: 700; line-height: 1.4; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .lead-desc { font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .lead-meta { display: flex; align-items: center; gap: 16px; margin-top: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); }
   .lead-card .h-card-accent { height: 4px; }
   .lead-card:hover .h-card-accent { opacity: 1; }
@@ -99,6 +99,7 @@
   /* ═══ SHARE BUTTON ═══ */
   .share-btn { padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; cursor: pointer; transition: all .15s; text-decoration: none; }
   .share-btn:hover { border-color: #2563eb; color: #2563eb; background: rgba(37,99,235,.06); }
+  .pw-badge { font-size: 10px; margin-left: 4px; cursor: help; }
 
   /* ═══ FOOTER ═══ */
   .footer { border-top: 1px solid var(--border); padding: 20px 40px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
@@ -254,6 +255,7 @@ const CATEGORIES = [
 let articlesByCategory = {};
 let expandedSections = new Set();
 let searchQuery = '';
+const globalParser = new DOMParser();
 CATEGORIES.forEach(c => articlesByCategory[c.id] = []);
 
 // ══════════════════════════════════════════════════════════════
@@ -283,8 +285,7 @@ function getTimeoutSignal(ms) {
 
 function parseRssXml(xmlText, source, catId) {
   try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const doc = globalParser.parseFromString(xmlText, 'text/xml');
     const items = doc.querySelectorAll('item');
     if (items.length === 0) {
       // Try Atom format
@@ -317,7 +318,7 @@ function parseRssXml(xmlText, source, catId) {
 function stripHtml(html) {
   if (!html) return '';
   try {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const doc = globalParser.parseFromString(html, 'text/html');
     return (doc.body.textContent || '').trim();
   } catch(e) {
     return '';
@@ -507,25 +508,53 @@ function getTimeAgo(d) {
   return dy < 7 ? `${dy}d` : d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
 }
 
+const PAYWALL_DOMAINS = [
+  'wsj.com','bloomberg.com','ft.com','perenews.com','perecredit.com',
+  'barrons.com','economist.com','theinformation.com','bisnow.com',
+  'institutionalinvestor.com','pitchbook.com','seekingalpha.com',
+  'commercialobserver.com','therealdeal.com','politico.com'
+];
+function isPaywalled(url) {
+  try { const h = new URL(url).hostname; return PAYWALL_DOMAINS.some(d => h.includes(d)); } catch(e) { return false; }
+}
 function openArticle(url) {
   window.open(url, '_blank');
+  if (isPaywalled(url)) window.open('https://removepaywalls.com/', '_blank');
 }
 
 function shareArticle(title, url, btn) {
-  btn.textContent = '⏳'; btn.style.color = '#d97706'; btn.style.borderColor = '#d97706';
+  if (btn.classList.contains('sending')) return;
+  const origText = btn.textContent;
+  btn.classList.add('sending');
+  
+  btn.textContent = '⏳'; 
+  btn.style.color = '#d97706'; 
+  btn.style.borderColor = '#d97706';
+  
   emailjs.send('service_1n6w6bh', 'template_0grn3hr', {
     article_title: title,
     article_url: url
   }).then(() => {
     btn.textContent = '✓ SENT';
-    btn.style.color = '#059669'; btn.style.borderColor = '#059669';
-    setTimeout(() => { btn.innerHTML = '✉ SHARE'; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+    btn.style.color = '#059669'; 
+    btn.style.borderColor = '#059669';
+    setTimeout(() => { 
+      btn.textContent = origText; 
+      btn.style.color = ''; 
+      btn.style.borderColor = ''; 
+      btn.classList.remove('sending');
+    }, 2000);
   }).catch((err) => {
     console.error('EmailJS Error:', err);
-    alert('EmailJS Error: ' + JSON.stringify(err));
     btn.textContent = '✗ FAIL';
-    btn.style.color = '#dc2626'; btn.style.borderColor = '#dc2626';
-    setTimeout(() => { btn.innerHTML = '✉ SHARE'; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+    btn.style.color = '#dc2626'; 
+    btn.style.borderColor = '#dc2626';
+    setTimeout(() => { 
+      btn.textContent = origText; 
+      btn.style.color = ''; 
+      btn.style.borderColor = ''; 
+      btn.classList.remove('sending');
+    }, 2000);
   });
 }
 
@@ -541,12 +570,14 @@ function renderCard(a, cat, isLead) {
   const safeDescLead = escapeHTML(rawDesc.slice(0, 250)) + (isLeadCut ? '…' : '');
   const safeDescSmall = escapeHTML(rawDesc.slice(0, 140)) + (isSmallCut ? '…' : '');
   const safeSource = escapeHTML(a.source);
-  const mailTitle = a.title.replace(/'/g, "\\'");
+  const mailTitle = a.title.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  const pw = isPaywalled(a.link);
+  const pwBadge = pw ? '<span class="pw-badge" title="Paywall - removepaywalls.com will open">🔒</span>' : '';
 
   if (isLead) return `
     <div class="lead-card" onclick="openArticle('${sl}')">
       <div class="h-card-accent" style="background:${cat.color}"></div>
-      <div class="lead-label" style="background:${cat.color}22;color:${cat.color};border:1px solid ${cat.color}44">TOP · ${safeSource.toUpperCase()}</div>
+      <div class="lead-label" style="background:${cat.color}22;color:${cat.color};border:1px solid ${cat.color}44">TOP · ${safeSource.toUpperCase()} ${pw ? '🔒' : ''}</div>
       <div class="lead-title">${safeTitle}</div>
       <div class="lead-desc">${safeDescLead}</div>
       <div class="lead-meta"><span>${safeSource}</span><span>·</span><span>${dateStr}</span><span>·</span><span>${timeAgoStr} ago</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉ SHARE</span></div>
@@ -554,7 +585,7 @@ function renderCard(a, cat, isLead) {
   return `
     <div class="h-card" onclick="openArticle('${sl}')">
       <div class="h-card-accent" style="background:${cat.color}"></div>
-      <div class="h-card-top"><span class="h-source">${safeSource}</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉</span><span class="h-time">${timeAgoStr}</span></div>
+      <div class="h-card-top"><span class="h-source">${safeSource} ${pwBadge}</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉</span><span class="h-time">${timeAgoStr}</span></div>
       <div class="h-title">${safeTitle}</div>
       <div class="h-desc">${safeDescSmall}</div>
     </div>`;
@@ -594,7 +625,16 @@ function renderDashboard() {
 }
 
 function toggleExpand(id) { expandedSections.has(id) ? expandedSections.delete(id) : expandedSections.add(id); renderDashboard(); }
-function handleSearch() { searchQuery = document.getElementById('searchInput').value.trim(); renderDashboard(); }
+
+let searchTimer = null;
+function handleSearch() { 
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchQuery = document.getElementById('searchInput').value.trim(); 
+    renderDashboard(); 
+  }, 150);
+}
+
 function refreshAll() { fetchAllFeeds(); }
 
 // Auto-refresh every 10 min
