@@ -633,12 +633,8 @@ async function fetchAllFeeds() {
 
             let existing = articlesByCategory[cat.id] || [];
             existing = existing.filter(a => (now - a.pubDate.getTime()) < MAX_AGE_MS);
-            const combined = [...fresh];
-            const newKeys = new Set(combined.map(a => a.title.toLowerCase().trim().slice(0, 60)));
-            existing.forEach(old => {
-              const k = old.title.toLowerCase().trim().slice(0, 60);
-              if (!newKeys.has(k)) { combined.push(old); newKeys.add(k); }
-            });
+            
+            const combined = [...fresh, ...existing];
             combined.sort((a, b) => b.pubDate - a.pubDate);
 
             // 유사도 기반 중복 제거 (같은 사건 다른 매체 보도 감지)
@@ -728,7 +724,7 @@ function isPaywalled(source) {
 }
 function openArticle(url, paywalled) {
   window.open(url, '_blank');
-  if (paywalled) window.open('https://removepaywalls.com/', '_blank');
+  if (paywalled) window.open('https://removepaywalls.com/' + url, '_blank');
 }
 
 function shareArticle(title, url, btn) {
