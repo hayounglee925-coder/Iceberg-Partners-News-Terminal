@@ -60,6 +60,9 @@
   .cat-article-count { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
   .cat-see-all { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent-ice); cursor: pointer; letter-spacing: 1px; opacity: .7; transition: opacity .2s; }
   .cat-see-all:hover { opacity: 1; }
+  .time-divider { display: flex; align-items: center; gap: 10px; padding: 10px 0 6px; }
+  .time-divider::after { content: ''; flex: 1; height: 1px; background: #1f2937; }
+  .time-divider span { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #6b7280; letter-spacing: 1.5px; white-space: nowrap; }
 
   /* ═══ CARD ROW ═══ */
   .card-row { display: flex; gap: 16px; overflow-x: auto; overflow-y: hidden; scroll-behavior: smooth; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
@@ -172,98 +175,74 @@ const RSS2JSON = url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeUR
 // ══════════════════════════════════════════════════════════════
 
 const CATEGORIES = [
-  { id: 'cre-finance', label: 'CRE FINANCE', sub: 'US · NYC · Office · Hotel · Conversions · Distressed', color: '#3b82f6', feeds: [
-    // 전체 미국 CRE 시장
-    { url: 'https://commercialobserver.com/feed/', source: 'Commercial Observer' },
-    { url: 'https://therealdeal.com/feed/', source: 'The Real Deal' },
-    { url: 'https://news.google.com/rss/search?q=site:bisnow.com+commercial+real+estate&hl=en-US&gl=US&ceid=US:en', source: 'Bisnow' },
-    { url: 'https://www.connectcre.com/feed/', source: 'ConnectCRE' },
-    // PERE News 중점
-    { url: 'https://news.google.com/rss/search?q=site:perenews.com&hl=en-US&gl=US&ceid=US:en', source: 'PERE News' },
-    { url: 'https://news.google.com/rss/search?q=site:perecredit.com&hl=en-US&gl=US&ceid=US:en', source: 'PERE Credit' },
-    { url: 'https://news.google.com/rss/search?q="PERE"+real+estate+private+equity+fund&hl=en-US&gl=US&ceid=US:en', source: 'PERE Fund' },
-    { url: 'https://news.google.com/rss/search?q="private+equity+real+estate"+fund+fundraising+investment&hl=en-US&gl=US&ceid=US:en', source: 'PE Real Estate' },
-    { url: 'https://news.google.com/rss/search?q=perenews.com+fundraising+OR+investor+OR+capital&hl=en-US&gl=US&ceid=US:en', source: 'PERE Capital' },
-    { url: 'https://news.google.com/rss/search?q=perenews.com+Asia+OR+Korea+OR+Japan+OR+Singapore&hl=en-US&gl=US&ceid=US:en', source: 'PERE Asia' },
-    { url: 'https://news.google.com/rss/search?q="real+estate+private+equity"+deal+acquisition+fund+close&hl=en-US&gl=US&ceid=US:en', source: 'RE PE Deals' },
-    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+deal+acquisition+office+multifamily&hl=en-US&gl=US&ceid=US:en', source: 'US CRE Deals' },
-    // NYC — One Pierrepont, Brooklyn 관련
-    { url: 'https://news.google.com/rss/search?q="New+York"+OR+"Brooklyn"+office+commercial+real+estate+deal&hl=en-US&gl=US&ceid=US:en', source: 'NYC CRE' },
-    // Denver — 1670 Broadway, Office Conversion 관련
-    { url: 'https://news.google.com/rss/search?q=office+to+residential+conversion+adaptive+reuse&hl=en-US&gl=US&ceid=US:en', source: 'Office Conversion' },
-    { url: 'https://news.google.com/rss/search?q=Denver+commercial+real+estate+office&hl=en-US&gl=US&ceid=US:en', source: 'Denver CRE' },
-    // Seattle — Lotte Hotel 관련
-    { url: 'https://news.google.com/rss/search?q=Seattle+hotel+hospitality+real+estate+investment&hl=en-US&gl=US&ceid=US:en', source: 'Seattle Hotel' },
-    { url: 'https://news.google.com/rss/search?q=hotel+acquisition+hospitality+REIT+investment&hl=en-US&gl=US&ceid=US:en', source: 'Hotel CRE' },
-    // Westchester 관련
-    { url: 'https://news.google.com/rss/search?q=Westchester+County+real+estate+development+housing&hl=en-US&gl=US&ceid=US:en', source: 'Westchester Dev' },
-    // Distressed CRE
-    { url: 'https://news.google.com/rss/search?q=distressed+commercial+real+estate+default+foreclosure+loan+maturity&hl=en-US&gl=US&ceid=US:en', source: 'Distressed CRE' },
-    { url: 'https://news.google.com/rss/search?q=CMBS+delinquency+special+servicing+default&hl=en-US&gl=US&ceid=US:en', source: 'CMBS Distress' },
-    // 한국 — 대미투자, 상업용 부동산
-    { url: 'https://news.google.com/rss/search?q=대미투자+미국+부동산+한국+기관투자&hl=ko&gl=KR&ceid=KR:ko', source: '대미투자' },
-    { url: 'https://news.google.com/rss/search?q=Korean+investor+US+real+estate+investment&hl=en-US&gl=US&ceid=US:en', source: 'KR→US CRE' },
-    { url: 'https://news.google.com/rss/search?q=상업용+부동산+오피스+물류센터+투자&hl=ko&gl=KR&ceid=KR:ko', source: '한경 부동산' },
-    { url: 'https://news.google.com/rss/search?q=미국+호텔+부동산+투자+매각&hl=ko&gl=KR&ceid=KR:ko', source: '한경 호텔투자' },
-  ]},
-  { id: 'private-credit', label: 'PRIVATE CREDIT & DISTRESSED', sub: 'Fund Risk · Defaults · Maturity · CMBS · Bank CRE', color: '#a78bfa', feeds: [
-    { url: 'https://news.google.com/rss/search?q=site:institutionalinvestor.com+private+credit&hl=en-US&gl=US&ceid=US:en', source: 'Institutional Investor' },
-    { url: 'https://news.google.com/rss/search?q=site:pitchbook.com+private+credit+fund&hl=en-US&gl=US&ceid=US:en', source: 'PitchBook' },
-    { url: 'https://news.google.com/rss/search?q=site:seekingalpha.com+REIT+private+credit&hl=en-US&gl=US&ceid=US:en', source: 'Seeking Alpha REITs' },
-    { url: 'https://news.google.com/rss/search?q="New+York"+private+credit+mezzanine+bridge+loan+CRE+debt&hl=en-US&gl=US&ceid=US:en', source: 'NYC Credit' },
-    // FFIEC / Bank CRE exposure 관련
-    { url: 'https://news.google.com/rss/search?q=bank+CRE+loan+exposure+FDIC+stress+commercial+real+estate&hl=en-US&gl=US&ceid=US:en', source: 'Bank CRE Risk' },
-    { url: 'https://news.google.com/rss/search?q=CRE+debt+maturity+wall+refinancing+distressed+loan&hl=en-US&gl=US&ceid=US:en', source: 'CRE Debt' },
+  { id: 'cre-default', label: 'CRE LOAN DEFAULT', sub: 'Defaults · Foreclosures · Distressed · Bank Exposure', color: '#ef4444', feeds: [
+    // 각 쿼리가 다른 각도 — Google News가 다양한 매체에서 자동 수집, <source> 태그로 실제 매체명 표시
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+loan+default&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Default' },
+    { url: 'https://news.google.com/rss/search?q=CRE+foreclosure+distressed+property&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Distressed' },
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+delinquency+rate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Delinquency' },
+    { url: 'https://news.google.com/rss/search?q=bank+commercial+real+estate+loan+loss+exposure&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Bank CRE' },
+    { url: 'https://news.google.com/rss/search?q=office+building+default+troubled+loan&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Office Default' },
+    { url: 'https://news.google.com/rss/search?q=CRE+workout+receiver+special+servicer+default&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Workout' },
+    { url: 'https://news.google.com/rss/search?q=FDIC+bank+failure+commercial+real+estate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'FDIC CRE' },
     // 한국
-    { url: 'https://news.google.com/rss/search?q=사모펀드+대출펀드+부실채권+만기+해외부동산&hl=ko&gl=KR&ceid=KR:ko', source: '매일경제 사모' },
-    { url: 'https://news.google.com/rss/search?q=PEF+크레딧펀드+메자닌+부동산펀드&hl=ko&gl=KR&ceid=KR:ko', source: '한경 크레딧' },
-    { url: 'https://news.google.com/rss/search?q=해외부동산+펀드+손실+만기+메리츠+하나&hl=ko&gl=KR&ceid=KR:ko', source: '해외부동산펀드' },
+    { url: 'https://news.google.com/rss/search?q=해외부동산+펀드+손실+부실+디폴트&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '해외부동산 부실' },
+    { url: 'https://news.google.com/rss/search?q=미국+상업용+부동산+부도+채무불이행+대출&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '미국CRE 부도' },
   ]},
-  { id: 'market-analysis', label: 'MARKET ANALYSIS', sub: 'US · Korea · Macro · 대미투자', color: '#10b981', feeds: [
-    { url: 'https://news.google.com/rss/search?q=CNBC+economy+market+analysis&hl=en-US&gl=US&ceid=US:en', source: 'CNBC' },
-    { url: 'https://news.google.com/rss/search?q=Reuters+business+economy+market&hl=en-US&gl=US&ceid=US:en', source: 'Reuters Biz' },
-    { url: 'https://news.google.com/rss/search?q=US+interest+rate+inflation+Fed+treasury+economy&hl=en-US&gl=US&ceid=US:en', source: 'US Macro' },
-    { url: 'https://news.google.com/rss/search?q=한국+경제+금리+증시+환율&hl=ko&gl=KR&ceid=KR:ko', source: '조선비즈' },
-    { url: 'https://news.google.com/rss/search?q=미국+경제+연준+기준금리+인플레이션&hl=ko&gl=KR&ceid=KR:ko', source: '한경 경제' },
-    { url: 'https://news.google.com/rss/search?q=한미+경제+환율+통화정책+금리차&hl=ko&gl=KR&ceid=KR:ko', source: '한미 경제' },
-    { url: 'https://news.google.com/rss/search?q=해외투자+대미투자+국민연금+미국+부동산+기관투자&hl=ko&gl=KR&ceid=KR:ko', source: '대미투자 동향' },
-    { url: 'https://news.google.com/rss/search?q=South+Korea+investment+US+real+estate+institutional&hl=en-US&gl=US&ceid=US:en', source: 'KR→US Flow' },
+  { id: 'cre-maturity', label: 'CRE MATURITY', sub: 'Maturity Wall · Refinancing · Debt Extension · Loan Workout', color: '#f59e0b', feeds: [
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+debt+maturity+wall&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Maturity Wall' },
+    { url: 'https://news.google.com/rss/search?q=CRE+loan+maturity+refinancing+challenges&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Refi' },
+    { url: 'https://news.google.com/rss/search?q=commercial+mortgage+coming+due+refinance&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Mortgage Maturity' },
+    { url: 'https://news.google.com/rss/search?q=CRE+loan+extension+workout+modify&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Loan Workout' },
+    { url: 'https://news.google.com/rss/search?q=office+loan+maturity+"extend+and+pretend"&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Extend Pretend' },
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+debt+rollover+interest+rate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Debt Rollover' },
+    { url: 'https://news.google.com/rss/search?q=CRE+bridge+loan+maturity+floating+rate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Bridge Loan' },
+    // 한국
+    { url: 'https://news.google.com/rss/search?q=해외부동산+펀드+만기+리파이낸싱+연장&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '해외부동산 만기' },
+    { url: 'https://news.google.com/rss/search?q=부동산+대출+만기+도래+차환+연장&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '대출 만기' },
   ]},
-  { id: 'energy-infra', label: 'ENERGY & INFRA', sub: 'Arizona · Ohio · SMR · Nuclear · EPC · Construction', color: '#f59e0b', feeds: [
-    { url: 'https://www.utilitydive.com/feeds/news/', source: 'Utility Dive' },
-    { url: 'https://news.google.com/rss/search?q=site:powermag.com+energy+power&hl=en-US&gl=US&ceid=US:en', source: 'POWER Magazine' },
-    // Arizona — Powerplant, Palo Verde, APS 관련
-    { url: 'https://news.google.com/rss/search?q=Arizona+energy+power+plant+solar+nuclear+grid&hl=en-US&gl=US&ceid=US:en', source: 'Arizona Energy' },
-    { url: 'https://news.google.com/rss/search?q=Palo+Verde+APS+"Arizona+Public+Service"+SRP+power&hl=en-US&gl=US&ceid=US:en', source: 'AZ Utilities' },
-    { url: 'https://news.google.com/rss/search?q=Arizona+"powered+land"+OR+"data+center"+power+infrastructure&hl=en-US&gl=US&ceid=US:en', source: 'AZ Powered Land' },
-    // Ohio Portsmouth — Powered Land 관련
-    { url: 'https://news.google.com/rss/search?q=Ohio+Portsmouth+energy+power+plant+nuclear&hl=en-US&gl=US&ceid=US:en', source: 'Ohio Energy' },
-    // SMR / Samsung SMR 관련
-    { url: 'https://news.google.com/rss/search?q=small+modular+reactor+SMR+nuclear+power&hl=en-US&gl=US&ceid=US:en', source: 'SMR Nuclear' },
-    { url: 'https://news.google.com/rss/search?q=삼성+SMR+소형모듈원자로+원전&hl=ko&gl=KR&ceid=KR:ko', source: '삼성 SMR' },
-    // Blackstone Invenergy Tallgrass 관련
-    { url: 'https://news.google.com/rss/search?q=Blackstone+infrastructure+Invenergy+OR+Tallgrass+energy&hl=en-US&gl=US&ceid=US:en', source: 'Blackstone Infra' },
-    // 건설사 / EPC — Arizona 프로젝트 건설사 동향
-    { url: 'https://news.google.com/rss/search?q="Samsung+C%26T"+OR+"Samsung+Engineering"+energy+construction+EPC&hl=en-US&gl=US&ceid=US:en', source: 'Samsung C&T' },
-    { url: 'https://news.google.com/rss/search?q=삼성물산+삼성엔지니어링+건설+에너지+발전소+EPC&hl=ko&gl=KR&ceid=KR:ko', source: '삼성물산 EPC' },
-    { url: 'https://news.google.com/rss/search?q=Bechtel+OR+Fluor+OR+"Black+%26+Veatch"+power+plant+EPC+construction&hl=en-US&gl=US&ceid=US:en', source: 'US EPC' },
-    { url: 'https://news.google.com/rss/search?q=에너지+LNG+원전+전력+인프라&hl=ko&gl=KR&ceid=KR:ko', source: '에너지경제' },
+  { id: 'cmbs', label: 'CMBS', sub: 'Delinquency · Special Servicing · Securitization · Ratings', color: '#a78bfa', feeds: [
+    { url: 'https://news.google.com/rss/search?q=CMBS+delinquency+rate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Delinquency' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+special+servicing+loan&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Special Servicing' },
+    { url: 'https://news.google.com/rss/search?q=commercial+mortgage+backed+securities+market&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Market' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+issuance+conduit+securitization&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Issuance' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+loss+liquidation+default&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Losses' },
+    { url: 'https://news.google.com/rss/search?q=Trepp+CMBS+commercial+real+estate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Trepp' },
+    { url: 'https://news.google.com/rss/search?q=KBRA+OR+Fitch+OR+Moody+CMBS+rating&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Ratings' },
+    // 한국
+    { url: 'https://news.google.com/rss/search?q=CMBS+부동산+유동화+증권+MBS&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: 'CMBS 한국' },
   ]},
-  { id: 'datacenter-ai', label: 'DATA CENTER / AI', sub: 'Arizona · Cloud · GPU · Hyperscale · Powered Land', color: '#06b6d4', feeds: [
-    { url: 'https://news.google.com/rss/search?q=data+center+hyperscale+cloud+infrastructure&hl=en-US&gl=US&ceid=US:en', source: 'DCK' },
+  { id: 'market-analysis', label: 'MARKET ANALYSIS', sub: 'Fed · Economy · Rates · Korea · Macro', color: '#10b981', feeds: [
+    { url: 'https://news.google.com/rss/search?q=US+economy+GDP+growth+outlook&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'US Economy' },
+    { url: 'https://news.google.com/rss/search?q=Federal+Reserve+interest+rate+decision&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Fed Policy' },
+    { url: 'https://news.google.com/rss/search?q=US+treasury+yield+bond+market&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Treasury' },
+    { url: 'https://news.google.com/rss/search?q=inflation+CPI+consumer+prices+US&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Inflation' },
+    { url: 'https://news.google.com/rss/search?q=stock+market+S%26P+500+Wall+Street+outlook&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Markets' },
+    // 한국
+    { url: 'https://news.google.com/rss/search?q=한국+경제+금리+증시+환율&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '한국 경제' },
+    { url: 'https://news.google.com/rss/search?q=미국+경제+연준+기준금리+인플레이션&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '한경 경제' },
+    { url: 'https://news.google.com/rss/search?q=한미+경제+환율+통화정책+금리차&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '한미 경제' },
+    { url: 'https://news.google.com/rss/search?q=해외투자+대미투자+국민연금+미국+부동산&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '대미투자' },
+  ]},
+  { id: 'datacenter-ai', label: 'DATA CENTER / AI', sub: 'Hyperscale · Cloud · GPU · Power · Powered Land', color: '#06b6d4', feeds: [
+    { url: 'https://news.google.com/rss/search?q=data+center+hyperscale+infrastructure+investment&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Data Center' },
+    { url: 'https://news.google.com/rss/search?q=AI+artificial+intelligence+infrastructure+compute&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'AI Infra' },
+    { url: 'https://news.google.com/rss/search?q=data+center+power+energy+demand+grid&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'DC Power' },
     { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', source: 'TechCrunch AI' },
-    // Arizona data center — AZ Powered Land 관련
-    { url: 'https://news.google.com/rss/search?q=Arizona+data+center+campus+hyperscale+power&hl=en-US&gl=US&ceid=US:en', source: 'AZ Data Center' },
-    { url: 'https://news.google.com/rss/search?q="powered+land"+data+center+development+site&hl=en-US&gl=US&ceid=US:en', source: 'Powered Land DC' },
-    { url: 'https://news.google.com/rss/search?q=데이터센터+AI+반도체+GPU+클라우드&hl=ko&gl=KR&ceid=KR:ko', source: '전자신문 AI' },
-    { url: 'https://news.google.com/rss/search?q=한국+데이터센터+투자+미국+진출&hl=ko&gl=KR&ceid=KR:ko', source: 'KR DC투자' },
+    { url: 'https://news.google.com/rss/search?q=Arizona+data+center+campus+hyperscale&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'AZ Data Center' },
+    { url: 'https://news.google.com/rss/search?q="powered+land"+data+center+development&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Powered Land' },
+    // 한국
+    { url: 'https://news.google.com/rss/search?q=데이터센터+AI+반도체+GPU+클라우드&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '전자신문 AI' },
+    { url: 'https://news.google.com/rss/search?q=한국+데이터센터+투자+미국+진출&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: 'KR DC투자' },
   ]},
-  { id: 'geopolitics', label: 'GEOPOLITICS & TRADE', sub: 'US-Korea · Tariffs · Policy · Diplomacy', color: '#f87171', feeds: [
-    { url: 'https://news.google.com/rss/search?q=Reuters+geopolitics+trade+tariffs&hl=en-US&gl=US&ceid=US:en', source: 'Reuters World' },
-    { url: 'https://news.google.com/rss/search?q=site:politico.com+economy+trade+policy&hl=en-US&gl=US&ceid=US:en', source: 'Politico' },
-    { url: 'https://news.google.com/rss/search?q=US+Korea+trade+tariff+CFIUS+foreign+investment&hl=en-US&gl=US&ceid=US:en', source: 'US-KR Trade' },
-    { url: 'https://news.google.com/rss/search?q=관세+무역+외교+지정학+통상&hl=ko&gl=KR&ceid=KR:ko', source: '연합뉴스 통상' },
-    { url: 'https://news.google.com/rss/search?q=한미+통상+관세+CFIUS+외국인투자&hl=ko&gl=KR&ceid=KR:ko', source: '한미 통상' },
+  { id: 'geopolitics', label: 'GEOPOLITICS & TRADE', sub: 'Tariffs · CFIUS · Trade Policy · US-Korea', color: '#f87171', feeds: [
+    { url: 'https://news.google.com/rss/search?q=US+trade+tariff+policy+geopolitics&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Trade Policy' },
+    { url: 'https://news.google.com/rss/search?q=CFIUS+foreign+investment+national+security&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CFIUS' },
+    { url: 'https://news.google.com/rss/search?q=US+China+trade+war+tariff+sanctions&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'US-China Trade' },
+    { url: 'https://news.google.com/rss/search?q=US+Korea+trade+alliance+investment&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'US-Korea' },
+    { url: 'https://news.google.com/rss/search?q=global+trade+sanctions+geopolitical+risk&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Geopolitics' },
+    // 한국
+    { url: 'https://news.google.com/rss/search?q=관세+무역+외교+지정학+통상&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '연합뉴스 통상' },
+    { url: 'https://news.google.com/rss/search?q=한미+통상+관세+CFIUS+외국인투자&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '한미 통상' },
   ]}
 ];
 
@@ -292,6 +271,34 @@ setInterval(updateClock, 1000); updateClock();
 // ══════════════════════════════════════════════════════════════
 // UTILITY
 // ══════════════════════════════════════════════════════════════
+
+// 유사도 기반 중복 제거 — 같은 사건을 다른 매체가 보도한 경우 감지
+function titleTokens(t) {
+  return t.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').split(/\s+/).filter(w => w.length > 2);
+}
+function jaccardSim(a, b) {
+  const sa = new Set(a), sb = new Set(b);
+  let inter = 0;
+  sa.forEach(w => { if (sb.has(w)) inter++; });
+  const union = sa.size + sb.size - inter;
+  return union === 0 ? 0 : inter / union;
+}
+function deduplicateArticles(articles) {
+  const result = [];
+  const tokenCache = [];
+  for (const a of articles) {
+    const tok = titleTokens(a.title);
+    let isDup = false;
+    for (let i = 0; i < result.length; i++) {
+      // 제목 앞 60자 완전 일치
+      if (a.title.toLowerCase().trim().slice(0, 60) === result[i].title.toLowerCase().trim().slice(0, 60)) { isDup = true; break; }
+      // 유사도 40% 이상이면 같은 뉴스로 판단 (다른 매체 같은 사건 감지)
+      if (jaccardSim(tok, tokenCache[i]) > 0.4) { isDup = true; break; }
+    }
+    if (!isDup) { result.push(a); tokenCache.push(tok); }
+  }
+  return result;
+}
 
 function getTimeoutSignal(ms) {
   try {
@@ -483,13 +490,26 @@ function parseRssXml(xmlText, source, catId) {
       });
     }
     return Array.from(items).slice(0, 15).map(item => {
-      const title = item.querySelector('title')?.textContent || '';
+      let title = item.querySelector('title')?.textContent || '';
       const link = item.querySelector('link')?.textContent || '#';
       const desc = item.querySelector('description')?.textContent || item.getElementsByTagName('content:encoded')[0]?.textContent || '';
       const dateStr = item.querySelector('pubDate')?.textContent || item.getElementsByTagName('dc:date')[0]?.textContent || '';
       let pubDate = new Date(dateStr);
       if (isNaN(pubDate)) pubDate = new Date();
-      return { title, description: stripHtml(desc), link: link.trim(), pubDate, source, category: catId };
+      // Google News RSS: <source> 태그에서 실제 매체명 추출
+      const realSource = item.querySelector('source')?.textContent || '';
+      let displaySource = source;
+      if (realSource) {
+        displaySource = realSource.replace(/\.com$|\.org$|\.gov$|\.net$/i, '').trim();
+      } else {
+        // Google News 제목 끝에 " - Source Name" 패턴 추출
+        const dashMatch = title.match(/\s-\s([^-]+)$/);
+        if (dashMatch) {
+          displaySource = dashMatch[1].trim();
+          title = title.replace(/\s-\s[^-]+$/, '').trim();
+        }
+      }
+      return { title, description: stripHtml(desc), link: link.trim(), pubDate, source: displaySource, category: catId };
     });
   } catch (e) {
     console.warn(`[PARSE] XML parse error for ${source}:`, e);
@@ -524,9 +544,17 @@ async function fetchFeedViaProxy(feedUrl, source, catId) {
         return d.items.map(item => {
           let pubDate = new Date(item.pubDate);
           if (isNaN(pubDate)) pubDate = new Date();
+          let title = item.title || '';
+          // Google News 제목에서 실제 매체명 추출 " - Source Name"
+          let displaySource = source;
+          const dashMatch = title.match(/\s-\s([^-]+)$/);
+          if (dashMatch) {
+            displaySource = dashMatch[1].trim();
+            title = title.replace(/\s-\s[^-]+$/, '').trim();
+          }
           return {
-            title: item.title || '', description: stripHtml(item.description || item.content || ''),
-            link: item.link || '#', pubDate, source, category: catId
+            title, description: stripHtml(item.description || item.content || ''),
+            link: item.link || '#', pubDate, source: displaySource, category: catId
           };
         });
       }
@@ -606,21 +634,23 @@ async function fetchAllFeeds() {
         try {
           const newArticles = await fetchFeedViaProxy(f.url, f.source, cat.id);
           if (newArticles && newArticles.length > 0) {
+            // 5일(120시간) 이내 기사만
+            const MAX_AGE_MS = 5 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const fresh = newArticles.filter(a => (now - a.pubDate.getTime()) < MAX_AGE_MS);
+
             let existing = articlesByCategory[cat.id] || [];
-            const combined = [...newArticles];
+            existing = existing.filter(a => (now - a.pubDate.getTime()) < MAX_AGE_MS);
+            const combined = [...fresh];
             const newKeys = new Set(combined.map(a => a.title.toLowerCase().trim().slice(0, 60)));
             existing.forEach(old => {
               const k = old.title.toLowerCase().trim().slice(0, 60);
               if (!newKeys.has(k)) { combined.push(old); newKeys.add(k); }
             });
             combined.sort((a, b) => b.pubDate - a.pubDate);
-            
-            const seen = new Set();
-            articlesByCategory[cat.id] = combined.filter(a => {
-              const k = a.title.toLowerCase().trim().slice(0, 60);
-              if (seen.has(k)) return false;
-              seen.add(k); return true;
-            });
+
+            // 유사도 기반 중복 제거 (같은 사건 다른 매체 보도 감지)
+            articlesByCategory[cat.id] = deduplicateArticles(combined);
 
             totalLoaded += newArticles.length;
             debouncedRender();
@@ -693,7 +723,7 @@ function getTimeAgo(d) {
 const PAYWALL_DOMAINS = [
   'wsj.com','bloomberg.com','ft.com','perenews.com','perecredit.com',
   'barrons.com','economist.com','theinformation.com','bisnow.com',
-  'institutionalinvestor.com','pitchbook.com','seekingalpha.com',
+  'institutionalinvestor.com','pitchbook.com',
   'commercialobserver.com','therealdeal.com','politico.com'
 ];
 function isPaywalled(url) {
@@ -796,10 +826,27 @@ function renderDashboard() {
 
     if (!articles.length) {
       html += `<div class="card-row"><div class="empty-row">${q ? 'NO MATCHES' : (isFetching ? 'LOADING…' : 'NO ARTICLES FOUND')}</div></div>`;
-    } else if (!isExp) {
-      html += `<div class="card-row">${articles.slice(0,6).map((a,i) => renderCard(a,cat,i===0)).join('')}</div>`;
     } else {
-      html += `<div class="expanded-grid show">${articles.map(a => renderCard(a,cat,false)).join('')}</div>`;
+      const DAY_MS = 24 * 60 * 60 * 1000;
+      const nowMs = Date.now();
+      const today = articles.filter(a => (nowMs - a.pubDate.getTime()) < DAY_MS);
+      const earlier = articles.filter(a => (nowMs - a.pubDate.getTime()) >= DAY_MS);
+
+      if (!isExp) {
+        // 축소 모드: TODAY 우선 6개, 부족하면 EARLIER로 채움
+        const preview = [...today, ...earlier].slice(0, 6);
+        html += `<div class="card-row">${preview.map((a,i) => renderCard(a,cat,i===0)).join('')}</div>`;
+      } else {
+        // 확장 모드: TODAY / EARLIER 구분 표시
+        if (today.length) {
+          html += `<div class="time-divider"><span>TODAY</span></div>`;
+          html += `<div class="expanded-grid show">${today.map(a => renderCard(a,cat,false)).join('')}</div>`;
+        }
+        if (earlier.length) {
+          html += `<div class="time-divider"><span>EARLIER THIS WEEK</span></div>`;
+          html += `<div class="expanded-grid show">${earlier.map(a => renderCard(a,cat,false)).join('')}</div>`;
+        }
+      }
     }
     html += `</section>`;
   });
