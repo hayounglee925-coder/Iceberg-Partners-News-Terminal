@@ -177,72 +177,72 @@ const RSS2JSON = url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeUR
 const CATEGORIES = [
   { id: 'cre-default', label: 'CRE LOAN DEFAULT', sub: 'Defaults · Foreclosures · Distressed · Bank Exposure', color: '#ef4444', feeds: [
     // 각 쿼리가 다른 각도 — Google News가 다양한 매체에서 자동 수집, <source> 태그로 실제 매체명 표시
-    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+loan+default&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Default' },
-    { url: 'https://news.google.com/rss/search?q=CRE+foreclosure+distressed+property&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Distressed' },
-    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+delinquency+rate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Delinquency' },
-    { url: 'https://news.google.com/rss/search?q=bank+commercial+real+estate+loan+loss+exposure&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Bank CRE' },
-    { url: 'https://news.google.com/rss/search?q=office+building+default+troubled+loan&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Office Default' },
-    { url: 'https://news.google.com/rss/search?q=CRE+workout+receiver+special+servicer+default&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Workout' },
-    { url: 'https://news.google.com/rss/search?q=FDIC+bank+failure+commercial+real+estate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'FDIC CRE' },
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+loan+default&hl=en-US&gl=US&ceid=US:en', source: 'CRE Default' },
+    { url: 'https://news.google.com/rss/search?q=CRE+foreclosure+distressed+property&hl=en-US&gl=US&ceid=US:en', source: 'CRE Distressed' },
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+delinquency+rate&hl=en-US&gl=US&ceid=US:en', source: 'CRE Delinquency' },
+    { url: 'https://news.google.com/rss/search?q=bank+commercial+real+estate+loan+loss+exposure&hl=en-US&gl=US&ceid=US:en', source: 'Bank CRE' },
+    { url: 'https://news.google.com/rss/search?q=office+building+default+troubled+loan&hl=en-US&gl=US&ceid=US:en', source: 'Office Default' },
+    { url: 'https://news.google.com/rss/search?q=CRE+workout+receiver+special+servicer+default&hl=en-US&gl=US&ceid=US:en', source: 'CRE Workout' },
+    { url: 'https://news.google.com/rss/search?q=FDIC+bank+failure+commercial+real+estate&hl=en-US&gl=US&ceid=US:en', source: 'FDIC CRE' },
     // 한국
-    { url: 'https://news.google.com/rss/search?q=해외부동산+펀드+손실+부실+디폴트&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '해외부동산 부실' },
-    { url: 'https://news.google.com/rss/search?q=미국+상업용+부동산+부도+채무불이행+대출&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '미국CRE 부도' },
+    { url: 'https://news.google.com/rss/search?q=해외부동산+펀드+손실+부실+디폴트&hl=ko&gl=KR&ceid=KR:ko', source: '해외부동산 부실' },
+    { url: 'https://news.google.com/rss/search?q=미국+상업용+부동산+부도+채무불이행+대출&hl=ko&gl=KR&ceid=KR:ko', source: '미국CRE 부도' },
   ]},
   { id: 'cre-maturity', label: 'CRE MATURITY', sub: 'Maturity Wall · Refinancing · Debt Extension · Loan Workout', color: '#f59e0b', feeds: [
-    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+debt+maturity+wall&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Maturity Wall' },
-    { url: 'https://news.google.com/rss/search?q=CRE+loan+maturity+refinancing+challenges&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CRE Refi' },
-    { url: 'https://news.google.com/rss/search?q=commercial+mortgage+coming+due+refinance&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Mortgage Maturity' },
-    { url: 'https://news.google.com/rss/search?q=CRE+loan+extension+workout+modify&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Loan Workout' },
-    { url: 'https://news.google.com/rss/search?q=office+loan+maturity+"extend+and+pretend"&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Extend Pretend' },
-    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+debt+rollover+interest+rate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Debt Rollover' },
-    { url: 'https://news.google.com/rss/search?q=CRE+bridge+loan+maturity+floating+rate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Bridge Loan' },
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+debt+maturity+wall&hl=en-US&gl=US&ceid=US:en', source: 'Maturity Wall' },
+    { url: 'https://news.google.com/rss/search?q=CRE+loan+maturity+refinancing+challenges&hl=en-US&gl=US&ceid=US:en', source: 'CRE Refi' },
+    { url: 'https://news.google.com/rss/search?q=commercial+mortgage+coming+due+refinance&hl=en-US&gl=US&ceid=US:en', source: 'Mortgage Maturity' },
+    { url: 'https://news.google.com/rss/search?q=CRE+loan+extension+workout+modify&hl=en-US&gl=US&ceid=US:en', source: 'Loan Workout' },
+    { url: 'https://news.google.com/rss/search?q=office+loan+maturity+"extend+and+pretend"&hl=en-US&gl=US&ceid=US:en', source: 'Extend Pretend' },
+    { url: 'https://news.google.com/rss/search?q=commercial+real+estate+debt+rollover+interest+rate&hl=en-US&gl=US&ceid=US:en', source: 'Debt Rollover' },
+    { url: 'https://news.google.com/rss/search?q=CRE+bridge+loan+maturity+floating+rate&hl=en-US&gl=US&ceid=US:en', source: 'Bridge Loan' },
     // 한국
-    { url: 'https://news.google.com/rss/search?q=해외부동산+펀드+만기+리파이낸싱+연장&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '해외부동산 만기' },
-    { url: 'https://news.google.com/rss/search?q=부동산+대출+만기+도래+차환+연장&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '대출 만기' },
+    { url: 'https://news.google.com/rss/search?q=해외부동산+펀드+만기+리파이낸싱+연장&hl=ko&gl=KR&ceid=KR:ko', source: '해외부동산 만기' },
+    { url: 'https://news.google.com/rss/search?q=부동산+대출+만기+도래+차환+연장&hl=ko&gl=KR&ceid=KR:ko', source: '대출 만기' },
   ]},
   { id: 'cmbs', label: 'CMBS', sub: 'Delinquency · Special Servicing · Securitization · Ratings', color: '#a78bfa', feeds: [
-    { url: 'https://news.google.com/rss/search?q=CMBS+delinquency+rate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Delinquency' },
-    { url: 'https://news.google.com/rss/search?q=CMBS+special+servicing+loan&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Special Servicing' },
-    { url: 'https://news.google.com/rss/search?q=commercial+mortgage+backed+securities+market&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Market' },
-    { url: 'https://news.google.com/rss/search?q=CMBS+issuance+conduit+securitization&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Issuance' },
-    { url: 'https://news.google.com/rss/search?q=CMBS+loss+liquidation+default&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Losses' },
-    { url: 'https://news.google.com/rss/search?q=Trepp+CMBS+commercial+real+estate&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Trepp' },
-    { url: 'https://news.google.com/rss/search?q=KBRA+OR+Fitch+OR+Moody+CMBS+rating&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CMBS Ratings' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+delinquency+rate&hl=en-US&gl=US&ceid=US:en', source: 'CMBS Delinquency' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+special+servicing+loan&hl=en-US&gl=US&ceid=US:en', source: 'Special Servicing' },
+    { url: 'https://news.google.com/rss/search?q=commercial+mortgage+backed+securities+market&hl=en-US&gl=US&ceid=US:en', source: 'CMBS Market' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+issuance+conduit+securitization&hl=en-US&gl=US&ceid=US:en', source: 'CMBS Issuance' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+loss+liquidation+default&hl=en-US&gl=US&ceid=US:en', source: 'CMBS Losses' },
+    { url: 'https://news.google.com/rss/search?q=Trepp+CMBS+commercial+real+estate&hl=en-US&gl=US&ceid=US:en', source: 'Trepp' },
+    { url: 'https://news.google.com/rss/search?q=KBRA+OR+Fitch+OR+Moody+CMBS+rating&hl=en-US&gl=US&ceid=US:en', source: 'CMBS Ratings' },
     // 한국
-    { url: 'https://news.google.com/rss/search?q=CMBS+부동산+유동화+증권+MBS&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: 'CMBS 한국' },
+    { url: 'https://news.google.com/rss/search?q=CMBS+부동산+유동화+증권+MBS&hl=ko&gl=KR&ceid=KR:ko', source: 'CMBS 한국' },
   ]},
   { id: 'market-analysis', label: 'MARKET ANALYSIS', sub: 'Fed · Economy · Rates · Korea · Macro', color: '#10b981', feeds: [
-    { url: 'https://news.google.com/rss/search?q=US+economy+GDP+growth+outlook&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'US Economy' },
-    { url: 'https://news.google.com/rss/search?q=Federal+Reserve+interest+rate+decision&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Fed Policy' },
-    { url: 'https://news.google.com/rss/search?q=US+treasury+yield+bond+market&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Treasury' },
-    { url: 'https://news.google.com/rss/search?q=inflation+CPI+consumer+prices+US&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Inflation' },
-    { url: 'https://news.google.com/rss/search?q=stock+market+S%26P+500+Wall+Street+outlook&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Markets' },
+    { url: 'https://news.google.com/rss/search?q=US+economy+GDP+growth+outlook&hl=en-US&gl=US&ceid=US:en', source: 'US Economy' },
+    { url: 'https://news.google.com/rss/search?q=Federal+Reserve+interest+rate+decision&hl=en-US&gl=US&ceid=US:en', source: 'Fed Policy' },
+    { url: 'https://news.google.com/rss/search?q=US+treasury+yield+bond+market&hl=en-US&gl=US&ceid=US:en', source: 'Treasury' },
+    { url: 'https://news.google.com/rss/search?q=inflation+CPI+consumer+prices+US&hl=en-US&gl=US&ceid=US:en', source: 'Inflation' },
+    { url: 'https://news.google.com/rss/search?q=stock+market+S%26P+500+Wall+Street+outlook&hl=en-US&gl=US&ceid=US:en', source: 'Markets' },
     // 한국
-    { url: 'https://news.google.com/rss/search?q=한국+경제+금리+증시+환율&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '한국 경제' },
-    { url: 'https://news.google.com/rss/search?q=미국+경제+연준+기준금리+인플레이션&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '한경 경제' },
-    { url: 'https://news.google.com/rss/search?q=한미+경제+환율+통화정책+금리차&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '한미 경제' },
-    { url: 'https://news.google.com/rss/search?q=해외투자+대미투자+국민연금+미국+부동산&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '대미투자' },
+    { url: 'https://news.google.com/rss/search?q=한국+경제+금리+증시+환율&hl=ko&gl=KR&ceid=KR:ko', source: '한국 경제' },
+    { url: 'https://news.google.com/rss/search?q=미국+경제+연준+기준금리+인플레이션&hl=ko&gl=KR&ceid=KR:ko', source: '한경 경제' },
+    { url: 'https://news.google.com/rss/search?q=한미+경제+환율+통화정책+금리차&hl=ko&gl=KR&ceid=KR:ko', source: '한미 경제' },
+    { url: 'https://news.google.com/rss/search?q=해외투자+대미투자+국민연금+미국+부동산&hl=ko&gl=KR&ceid=KR:ko', source: '대미투자' },
   ]},
   { id: 'datacenter-ai', label: 'DATA CENTER / AI', sub: 'Hyperscale · Cloud · GPU · Power · Powered Land', color: '#06b6d4', feeds: [
-    { url: 'https://news.google.com/rss/search?q=data+center+hyperscale+infrastructure+investment&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Data Center' },
-    { url: 'https://news.google.com/rss/search?q=AI+artificial+intelligence+infrastructure+compute&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'AI Infra' },
-    { url: 'https://news.google.com/rss/search?q=data+center+power+energy+demand+grid&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'DC Power' },
+    { url: 'https://news.google.com/rss/search?q=data+center+hyperscale+infrastructure+investment&hl=en-US&gl=US&ceid=US:en', source: 'Data Center' },
+    { url: 'https://news.google.com/rss/search?q=AI+artificial+intelligence+infrastructure+compute&hl=en-US&gl=US&ceid=US:en', source: 'AI Infra' },
+    { url: 'https://news.google.com/rss/search?q=data+center+power+energy+demand+grid&hl=en-US&gl=US&ceid=US:en', source: 'DC Power' },
     { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', source: 'TechCrunch AI' },
-    { url: 'https://news.google.com/rss/search?q=Arizona+data+center+campus+hyperscale&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'AZ Data Center' },
-    { url: 'https://news.google.com/rss/search?q="powered+land"+data+center+development&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Powered Land' },
+    { url: 'https://news.google.com/rss/search?q=Arizona+data+center+campus+hyperscale&hl=en-US&gl=US&ceid=US:en', source: 'AZ Data Center' },
+    { url: 'https://news.google.com/rss/search?q="powered+land"+data+center+development&hl=en-US&gl=US&ceid=US:en', source: 'Powered Land' },
     // 한국
-    { url: 'https://news.google.com/rss/search?q=데이터센터+AI+반도체+GPU+클라우드&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '전자신문 AI' },
-    { url: 'https://news.google.com/rss/search?q=한국+데이터센터+투자+미국+진출&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: 'KR DC투자' },
+    { url: 'https://news.google.com/rss/search?q=데이터센터+AI+반도체+GPU+클라우드&hl=ko&gl=KR&ceid=KR:ko', source: '전자신문 AI' },
+    { url: 'https://news.google.com/rss/search?q=한국+데이터센터+투자+미국+진출&hl=ko&gl=KR&ceid=KR:ko', source: 'KR DC투자' },
   ]},
   { id: 'geopolitics', label: 'GEOPOLITICS & TRADE', sub: 'Tariffs · CFIUS · Trade Policy · US-Korea', color: '#f87171', feeds: [
-    { url: 'https://news.google.com/rss/search?q=US+trade+tariff+policy+geopolitics&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Trade Policy' },
-    { url: 'https://news.google.com/rss/search?q=CFIUS+foreign+investment+national+security&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'CFIUS' },
-    { url: 'https://news.google.com/rss/search?q=US+China+trade+war+tariff+sanctions&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'US-China Trade' },
-    { url: 'https://news.google.com/rss/search?q=US+Korea+trade+alliance+investment&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'US-Korea' },
-    { url: 'https://news.google.com/rss/search?q=global+trade+sanctions+geopolitical+risk&hl=en-US&gl=US&ceid=US:en&when=5d', source: 'Geopolitics' },
+    { url: 'https://news.google.com/rss/search?q=US+trade+tariff+policy+geopolitics&hl=en-US&gl=US&ceid=US:en', source: 'Trade Policy' },
+    { url: 'https://news.google.com/rss/search?q=CFIUS+foreign+investment+national+security&hl=en-US&gl=US&ceid=US:en', source: 'CFIUS' },
+    { url: 'https://news.google.com/rss/search?q=US+China+trade+war+tariff+sanctions&hl=en-US&gl=US&ceid=US:en', source: 'US-China Trade' },
+    { url: 'https://news.google.com/rss/search?q=US+Korea+trade+alliance+investment&hl=en-US&gl=US&ceid=US:en', source: 'US-Korea' },
+    { url: 'https://news.google.com/rss/search?q=global+trade+sanctions+geopolitical+risk&hl=en-US&gl=US&ceid=US:en', source: 'Geopolitics' },
     // 한국
-    { url: 'https://news.google.com/rss/search?q=관세+무역+외교+지정학+통상&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '연합뉴스 통상' },
-    { url: 'https://news.google.com/rss/search?q=한미+통상+관세+CFIUS+외국인투자&hl=ko&gl=KR&ceid=KR:ko&when=5d', source: '한미 통상' },
+    { url: 'https://news.google.com/rss/search?q=관세+무역+외교+지정학+통상&hl=ko&gl=KR&ceid=KR:ko', source: '연합뉴스 통상' },
+    { url: 'https://news.google.com/rss/search?q=한미+통상+관세+CFIUS+외국인투자&hl=ko&gl=KR&ceid=KR:ko', source: '한미 통상' },
   ]}
 ];
 
@@ -482,15 +482,14 @@ function parseRssXml(xmlText, source, catId) {
       // Google News RSS: <source> 태그에서 실제 매체명 추출
       const realSource = item.querySelector('source')?.textContent || '';
       let displaySource = source;
+      // 제목 끝 " - Source Name" 패턴은 항상 제거 (Google News 표준 형식)
+      const dashMatch = title.match(/\s-\s([^-]+)$/);
+      if (dashMatch) {
+        if (!realSource) displaySource = dashMatch[1].trim();
+        title = title.replace(/\s-\s[^-]+$/, '').trim();
+      }
       if (realSource) {
         displaySource = realSource.replace(/\.com$|\.org$|\.gov$|\.net$/i, '').trim();
-      } else {
-        // Google News 제목 끝에 " - Source Name" 패턴 추출
-        const dashMatch = title.match(/\s-\s([^-]+)$/);
-        if (dashMatch) {
-          displaySource = dashMatch[1].trim();
-          title = title.replace(/\s-\s[^-]+$/, '').trim();
-        }
       }
       return { title, description: stripHtml(desc), link: link.trim(), pubDate, source: displaySource, category: catId };
     });
@@ -561,7 +560,7 @@ async function fetchFeedViaProxy(feedUrl, source, catId) {
 }
 
 // LocalStorage Persistence
-const CACHE_KEY = 'iceberg_news_cache_v3';
+const CACHE_KEY = 'iceberg_news_cache_v4';
 function saveCache() {
   try {
     const toSave = {};
@@ -608,17 +607,27 @@ async function fetchAllFeeds() {
 
   failedFeeds = [];
   let totalLoaded = 0;
-  
+
+  // 동적 after: 날짜 계산 (7일 전)
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const afterDate = sevenDaysAgo.toISOString().slice(0, 10); // YYYY-MM-DD
+
   try {
     const tasks = [];
     CATEGORIES.forEach(cat => {
     cat.feeds.forEach(f => {
       tasks.push(async () => {
         try {
-          const newArticles = await fetchFeedViaProxy(f.url, f.source, cat.id);
+          // Google News RSS URL에 after: 파라미터 동적 추가
+          let feedUrl = f.url;
+          if (feedUrl.includes('news.google.com/rss/search')) {
+            const sep = feedUrl.includes('?q=') ? '+' : '&q=';
+            feedUrl = feedUrl.replace(/(\?q=)/, `$1after:${afterDate}+`);
+          }
+          const newArticles = await fetchFeedViaProxy(feedUrl, f.source, cat.id);
           if (newArticles && newArticles.length > 0) {
-            // 5일(120시간) 이내 기사만
-            const MAX_AGE_MS = 5 * 24 * 60 * 60 * 1000;
+            // 7일 이내 기사만
+            const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
             const now = Date.now();
             const fresh = newArticles.filter(a => (now - a.pubDate.getTime()) < MAX_AGE_MS);
 
@@ -703,18 +712,23 @@ function getTimeAgo(d) {
   return dy < 7 ? `${dy}d` : d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
 }
 
-const PAYWALL_DOMAINS = [
-  'wsj.com','bloomberg.com','ft.com','perenews.com','perecredit.com',
-  'barrons.com','economist.com','theinformation.com','bisnow.com',
-  'institutionalinvestor.com','pitchbook.com',
-  'commercialobserver.com','therealdeal.com','politico.com'
+const PAYWALL_SOURCES = [
+  'wsj','wall street journal','bloomberg','financial times','ft',
+  'barrons',"barron's",'economist','the information','bisnow',
+  'pere news','pere credit','perenews','perecredit',
+  'institutional investor','pitchbook',
+  'commercial observer','the real deal','politico',
+  'new york times','nytimes','washington post','business insider',
+  'reuters breakingviews','the athletic','the telegraph'
 ];
-function isPaywalled(url) {
-  try { const h = new URL(url).hostname; return PAYWALL_DOMAINS.some(d => h.includes(d)); } catch(e) { return false; }
+function isPaywalled(source) {
+  if (!source) return false;
+  const s = source.toLowerCase();
+  return PAYWALL_SOURCES.some(p => s.includes(p));
 }
-function openArticle(url) {
+function openArticle(url, paywalled) {
   window.open(url, '_blank');
-  if (isPaywalled(url)) window.open('https://removepaywalls.com/' + url, '_blank');
+  if (paywalled) window.open('https://removepaywalls.com/', '_blank');
 }
 
 function shareArticle(title, url, btn) {
@@ -766,11 +780,11 @@ function renderCard(a, cat, isLead) {
   const safeDescSmall = escapeHTML(rawDesc.slice(0, 140)) + (isSmallCut ? '…' : '');
   const safeSource = escapeHTML(a.source);
   const mailTitle = a.title.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-  const pw = isPaywalled(a.link);
+  const pw = isPaywalled(a.source);
   const pwBadge = pw ? '<span class="pw-badge" title="Paywall - removepaywalls.com will open">🔒</span>' : '';
 
   if (isLead) return `
-    <div class="lead-card" onclick="openArticle('${sl}')">
+    <div class="lead-card" onclick="openArticle('${sl}', ${pw})">
       <div class="h-card-accent" style="background:${cat.color}"></div>
       <div class="lead-label" style="background:${cat.color}22;color:${cat.color};border:1px solid ${cat.color}44">TOP · ${safeSource.toUpperCase()} ${pw ? '🔒' : ''}</div>
       <div class="lead-title">${safeTitle}</div>
@@ -778,7 +792,7 @@ function renderCard(a, cat, isLead) {
       <div class="lead-meta"><span>${safeSource}</span><span>·</span><span>${dateStr}</span><span>·</span><span>${timeAgoStr} ago</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉ SHARE</span></div>
     </div>`;
   return `
-    <div class="h-card" onclick="openArticle('${sl}')">
+    <div class="h-card" onclick="openArticle('${sl}', ${pw})">
       <div class="h-card-accent" style="background:${cat.color}"></div>
       <div class="h-card-top"><span class="h-source">${safeSource} ${pwBadge}</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉</span><span class="h-time">${timeAgoStr}</span></div>
       <div class="h-title">${safeTitle}</div>
