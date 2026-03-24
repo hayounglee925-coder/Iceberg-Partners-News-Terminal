@@ -272,32 +272,15 @@ setInterval(updateClock, 1000); updateClock();
 // UTILITY
 // ══════════════════════════════════════════════════════════════
 
-// 유사도 기반 중복 제거 — 같은 사건을 다른 매체가 보도한 경우 감지
-function titleTokens(t) {
-  return t.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').split(/\s+/).filter(w => w.length > 2);
-}
-function jaccardSim(a, b) {
-  const sa = new Set(a), sb = new Set(b);
-  let inter = 0;
-  sa.forEach(w => { if (sb.has(w)) inter++; });
-  const union = sa.size + sb.size - inter;
-  return union === 0 ? 0 : inter / union;
-}
+// 중복 제거 — 제목 앞 80자 일치 기준 (도메인 공통 단어가 많아 유사도 방식은 오탐 발생)
 function deduplicateArticles(articles) {
-  const result = [];
-  const tokenCache = [];
-  for (const a of articles) {
-    const tok = titleTokens(a.title);
-    let isDup = false;
-    for (let i = 0; i < result.length; i++) {
-      // 제목 앞 60자 완전 일치
-      if (a.title.toLowerCase().trim().slice(0, 60) === result[i].title.toLowerCase().trim().slice(0, 60)) { isDup = true; break; }
-      // 유사도 40% 이상이면 같은 뉴스로 판단 (다른 매체 같은 사건 감지)
-      if (jaccardSim(tok, tokenCache[i]) > 0.4) { isDup = true; break; }
-    }
-    if (!isDup) { result.push(a); tokenCache.push(tok); }
-  }
-  return result;
+  const seen = new Set();
+  return articles.filter(a => {
+    const k = a.title.toLowerCase().replace(/\s+/g, ' ').trim().slice(0, 80);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }
 
 function getTimeoutSignal(ms) {
@@ -578,7 +561,7 @@ async function fetchFeedViaProxy(feedUrl, source, catId) {
 }
 
 // LocalStorage Persistence
-const CACHE_KEY = 'iceberg_news_cache_v2';
+const CACHE_KEY = 'iceberg_news_cache_v3';
 function saveCache() {
   try {
     const toSave = {};
