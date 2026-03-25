@@ -98,6 +98,31 @@
       gap: 20px;
     }
 
+    .paywall-tools {
+      display: flex;
+      gap: 6px;
+    }
+    .paywall-tool-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .paywall-tool-btn:hover {
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+      background: rgba(217, 119, 6, 0.05);
+    }
     .live-indicator {
       display: flex;
       align-items: center;
@@ -734,6 +759,10 @@
       </div>
     </div>
     <div class="header-right">
+      <div class="paywall-tools">
+        <a class="paywall-tool-btn" href="https://removepaywalls.com/" target="_blank" title="Paywall 기사 URL을 붙여넣어 우회">🔓 RemovePaywalls</a>
+        <a class="paywall-tool-btn" href="https://archive.today/" target="_blank" title="아카이브된 기사 검색/우회">🔓 Archive.today</a>
+      </div>
       <div class="live-indicator"><span class="live-dot"></span><span>LIVE</span></div>
       <div class="clock" id="clock"></div>
       <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()">↻ REFRESH</button>
@@ -1346,9 +1375,8 @@
       const s = source.toLowerCase();
       return PAYWALL_SOURCES.some(p => s.includes(p));
     }
-    function openArticle(url, paywalled) {
+    function openArticle(url) {
       window.open(url, '_blank');
-      if (paywalled) window.open('https://removepaywalls.com/', '_blank');
     }
 
     function shareArticle(title, url, btn) {
@@ -1401,10 +1429,10 @@
       const safeSource = escapeHTML(a.source);
       const mailTitle = a.title.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
       const pw = isPaywalled(a.source);
-      const pwBadge = pw ? '<span class="pw-badge" title="Paywall - removepaywalls.com will open">🔒</span>' : '';
+      const pwBadge = pw ? '<span class="pw-badge" title="Paywall — 상단 우회 도구 사용">🔒</span>' : '';
 
       if (isLead) return `
-    <div class="lead-card" onclick="openArticle('${sl}', ${pw})">
+    <div class="lead-card" onclick="openArticle('${sl}')">
       <div class="h-card-accent" style="background:${cat.color}"></div>
       <div class="lead-label" style="background:${cat.color}22;color:${cat.color};border:1px solid ${cat.color}44">TOP · ${safeSource.toUpperCase()} ${pw ? '🔒' : ''}</div>
       <div class="lead-title">${safeTitle}</div>
@@ -1412,7 +1440,7 @@
       <div class="lead-meta"><span>${safeSource}</span><span>·</span><span>${dateStr}</span><span>·</span><span>${timeAgoStr} ago</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉ SHARE</span></div>
     </div>`;
       return `
-    <div class="h-card" onclick="openArticle('${sl}', ${pw})">
+    <div class="h-card" onclick="openArticle('${sl}')">
       <div class="h-card-accent" style="background:${cat.color}"></div>
       <div class="h-card-top"><span class="h-source">${safeSource} ${pwBadge}</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉</span><span class="h-time">${timeAgoStr}</span></div>
       <div class="h-title">${safeTitle}</div>
