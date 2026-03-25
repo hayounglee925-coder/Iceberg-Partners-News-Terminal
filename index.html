@@ -1452,7 +1452,7 @@
       return `
     <div class="h-card" onclick="openArticle('${sl}')">
       <div class="h-card-accent" style="background:${cat.color}"></div>
-      <div class="h-card-top"><span class="h-source">${safeSource} ${pwBadge}</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉</span><span class="h-time">${timeAgoStr}</span></div>
+      <div class="h-card-top"><span class="h-source">${safeSource} ${pwBadge}</span><span class="share-btn" onclick="event.stopPropagation();shareArticle('${mailTitle}','${sl}',this)">✉</span><span style="flex:1"></span><span class="h-time">${timeAgoStr}</span></div>
       <div class="h-title">${safeTitle}</div>
       <div class="h-desc">${safeDescSmall}</div>
     </div>`;
