@@ -1321,13 +1321,25 @@
     }
 
     const PAYWALL_SOURCES = [
-      'wsj', 'wall street journal', 'bloomberg', 'financial times', 'ft',
-      'barrons', "barron's", 'economist', 'the information', 'bisnow',
-      'pere news', 'pere credit', 'perenews', 'perecredit',
-      'institutional investor', 'pitchbook',
-      'commercial observer', 'the real deal', 'politico',
+      // 주요 금융/비즈니스
+      'wsj', 'wall street journal', 'bloomberg', 'financial times',
+      'barrons', "barron's", 'economist', 'the information',
       'new york times', 'nytimes', 'washington post', 'business insider',
-      'reuters breakingviews', 'the athletic', 'the telegraph'
+      'reuters breakingviews', 'the athletic', 'the telegraph',
+      'fortune', 'forbes',
+      // CRE / 부동산 전문
+      'bisnow', 'commercial observer', 'the real deal', 'costar',
+      'pere news', 'pere credit', 'perenews', 'perecredit',
+      'institutional investor', 'pitchbook', 'trepp',
+      'business journals', 'bizjournals', 'businessden',
+      "crain's", 'crain', 'globest',
+      // 기타 paywall/signup
+      'politico', 'the daily beast', 'new yorker', 'vanity fair',
+      'los angeles times', 'la times', 'chicago tribune',
+      'boston globe', 'san francisco chronicle', 'sfchronicle',
+      'dallas morning', 'houston chronicle', 'denver post',
+      'the mercury news', 'seattle times',
+      'marketplace', 'insider', 'business of business',
     ];
     function isPaywalled(source) {
       if (!source) return false;
